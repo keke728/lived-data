@@ -4,8 +4,11 @@
   const publicationGrid = document.querySelector("#publication-grid");
   const publicationFilters = document.querySelector("#publication-filters");
   const filterReset = document.querySelector("#publication-filter-reset");
+  const publicationSearch = document.querySelector("#publication-search");
+  const searchToggle = document.querySelector("#publication-search-toggle");
+  const searchPanel = document.querySelector("#publication-search-panel");
+  const resultCount = document.querySelector("#publication-result-count");
   const featuredPosition = document.querySelector("#featured-position");
-  const featuredDots = [...document.querySelectorAll(".publication-carousel-dot")];
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   if (!featuredPublication || !publicationGrid || !publicationFilters) return;
@@ -29,14 +32,20 @@
     ["video"],
   ];
   const filterLabels = { type: "Type", venue: "Venue", year: "Year", theme: "Theme" };
-  const filterOptions = {
-    type: ["Full", "Workshop", "Poster", "Pictorial"],
-    venue: ["VIS", "CHI", "ASSETS"],
-    year: [...new Set(publications.map((work) => String(work.year)).filter(Boolean))],
-    theme: ["Narrative", "Affective", "Embodied"],
-  };
+  const filterOptions = Object.fromEntries(Object.keys(filterLabels).map((field) => {
+    const values = [...new Set(publications.map((work) => String(work[field] || "")).filter(Boolean))];
+    return [field, field === "year" ? values.sort((a, b) => Number(b) - Number(a)) : values.sort()];
+  }));
   const filterState = Object.fromEntries(Object.keys(filterLabels).map((field) => [field, ""]));
-  const featuredWorks = publications.slice(0, featuredDots.length);
+  const featuredWorks = publications.slice(0, 5);
+  const featuredDots = featuredWorks.map((work, index) => {
+    const dot = document.createElement("button");
+    dot.className = "publication-carousel-dot";
+    dot.type = "button";
+    dot.setAttribute("aria-label", `Show featured work ${index + 1}`);
+    featuredPosition.before(dot);
+    return dot;
+  });
   let featuredIndex = 0;
 
   const formatAuthorName = (name) => {
@@ -56,27 +65,39 @@
   }).join("");
 
   const formatTitle = (title) => title.replace(
-    "Data Visualization",
-    '<span class="publication-title-phrase">Data Visualization</span>'
+    /Data (?:Visualization|Science)/g,
+    '<span class="publication-title-phrase">$&</span>'
   );
 
-  const getFilterValue = (work, field) => field === "type"
-    ? work.type.replace(/ Paper$/, "")
-    : String(work[field]);
+  const getFilterValue = (work, field) => String(work[field]);
+  const normalizeSearch = (text) => text.replace(/&nbsp;/g, " ").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const searchIndex = new Map(publications.map((work) => [work.id, normalizeSearch([
+    work.title, work.summary, ...work.authors, ...work.authors.map(formatAuthorName),
+    work.venue, work.year, work.type, work.theme,
+  ].join(" "))]));
 
   const createPublicationCard = (work, featured = false) => {
     const cardClass = [
       "publication-card",
       featured ? "publication-card-featured" : "",
       !featured && work.archiveThumbnailFit === "cover" ? "archive-thumbnail-cover" : "",
+      !featured && work.archiveThumbnailFit === "contain" ? "archive-thumbnail-contain" : "",
     ].filter(Boolean).join(" ");
     const thumbnailClass = work.thumbnailFit === "contain-dark"
       ? "publication-thumbnail is-contained is-dark-contained"
-      : "publication-thumbnail";
+      : work.thumbnailFit === "contain"
+        ? "publication-thumbnail is-contained"
+        : "publication-thumbnail";
     const imageScale = featured ? work.featuredImageScale : work.archiveImageScale;
-    const imageStyle = imageScale
-      ? ` style="--${featured ? "featured" : "archive"}-thumbnail-scale: ${imageScale}"`
-      : "";
+    const imageStyles = [
+      featured && work.featuredThumbnailWidth ? `--featured-thumbnail-width: ${work.featuredThumbnailWidth}` : "",
+      featured && work.featuredImageOffsetY ? `--featured-thumbnail-offset-y: ${work.featuredImageOffsetY}` : "",
+      imageScale ? `--${featured ? "featured" : "archive"}-thumbnail-scale: ${imageScale}` : "",
+      !featured && work.archiveImageOffsetY ? `--archive-thumbnail-offset-y: ${work.archiveImageOffsetY}` : "",
+      work.archiveThumbnailBackground ? `--archive-thumbnail-background: ${work.archiveThumbnailBackground}` : "",
+      work.thumbnailBlendMode ? `--thumbnail-blend-mode: ${work.thumbnailBlendMode}` : "",
+    ].filter(Boolean);
+    const imageStyle = imageStyles.length ? ` style="${imageStyles.join("; ")}"` : "";
     const primaryResource = work.links.find((link) => (link.type === "paper" || link.type === "poster") && link.url);
     const title = primaryResource
       ? `<a class="publication-title-link" href="${primaryResource.url}" target="_blank" rel="noreferrer" aria-label="Read ${work.title} PDF">${formatTitle(work.title)}</a>`
@@ -95,7 +116,7 @@
       <div class="publication-card-copy">
         <div class="publication-card-primary">
           <p class="publication-card-meta"><span class="publication-type-tag">${work.type}</span><span>${work.venue} · ${work.year}</span></p>
-          <h3>${title}</h3>
+          <${featured ? "h3" : "h4"}>${title}</${featured ? "h3" : "h4"}>
           <p class="publication-card-summary">${work.summary}</p>
           <p class="publication-card-authors">${formatAuthors(work, featured)}</p>
         </div>
@@ -150,13 +171,24 @@
   };
 
   const renderArchive = () => {
+    const searchTerms = normalizeSearch(publicationSearch.value).trim().split(/\s+/).filter(Boolean);
     const visibleWorks = publications.filter((work) =>
+      searchTerms.every((term) => searchIndex.get(work.id).includes(term)) &&
       Object.entries(filterState).every(([field, value]) => !value || getFilterValue(work, field) === value)
     );
-    filterReset.classList.toggle("has-active-filters", Object.values(filterState).some(Boolean));
+    filterReset.classList.toggle("has-active-filters", searchTerms.length > 0 || Object.values(filterState).some(Boolean));
+    resultCount.textContent = `${visibleWorks.length} of ${publications.length} publications`;
+    const yearGroups = new Map();
+    visibleWorks.forEach((work) => {
+      if (!yearGroups.has(work.year)) yearGroups.set(work.year, []);
+      yearGroups.get(work.year).push(work);
+    });
     publicationGrid.innerHTML = visibleWorks.length
-      ? visibleWorks.map((work) => createPublicationCard(work)).join("")
-      : '<p class="publication-empty">No work matches these filters.</p>';
+      ? [...yearGroups].map(([year, works]) => `<section class="publication-year-group" aria-labelledby="publication-year-${year}">
+          <h3 id="publication-year-${year}" class="publication-year-heading">${year}</h3>
+          <div class="publication-year-papers">${works.map((work) => createPublicationCard(work)).join("")}</div>
+        </section>`).join("")
+      : '<p class="publication-empty">No publications found. Try another search or clear the filters.</p>';
   };
 
   const populateFilters = () => {
@@ -186,6 +218,7 @@
   };
 
   const resetFilters = () => {
+    publicationSearch.value = "";
     Object.keys(filterState).forEach((field) => {
       const control = publicationFilters.querySelector(`[data-field="${field}"]`);
       const trigger = control.querySelector(".publication-filter-trigger");
@@ -220,6 +253,27 @@
   });
 
   filterReset.addEventListener("click", resetFilters);
+  publicationSearch.addEventListener("input", renderArchive);
+
+  const setSearchExpanded = (expanded) => {
+    searchPanel.hidden = !expanded;
+    searchToggle.setAttribute("aria-expanded", String(expanded));
+    if (expanded) {
+      closeFilterMenus();
+      publicationSearch.focus();
+    } else {
+      publicationSearch.value = "";
+      renderArchive();
+      searchToggle.focus();
+    }
+  };
+  searchToggle.addEventListener("click", () => setSearchExpanded(searchPanel.hidden));
+  publicationSearch.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setSearchExpanded(false);
+    }
+  });
 
   featuredDots.forEach((dot, index) => {
     dot.addEventListener("click", () => {
