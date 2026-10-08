@@ -450,21 +450,24 @@ main {
   box-decoration-break: clone;
   background-image:
     linear-gradient(var(--wave-surface), var(--wave-surface)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='7' viewBox='0 0 20 7'%3E%3Cpath d='M0 3.5 Q5 -1 10 3.5 T20 3.5' fill='none' stroke='%23f1bc42' stroke-width='1.5'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='7' viewBox='0 0 20 7'%3E%3Cpath d='M0 3.5 Q5 -1 10 3.5 T20 3.5' fill='none' stroke='%23f1bc42' stroke-opacity='.45' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat, repeat-x;
   background-position: right bottom, left bottom;
   background-size: 100% 7px, 20px 7px;
-  transition: background-size 650ms cubic-bezier(.22, 1, .36, 1);
+  animation: wave-underline-draw 6s ease-in-out infinite;
 }
-.wave-underline:hover {
-  background-size: 0% 7px, 20px 7px;
+@keyframes wave-underline-draw {
+  0%, 8%, 100% { background-size: 100% 7px, 20px 7px; }
+  28%, 85% { background-size: 0% 7px, 20px 7px; }
 }
 .join-phd-dialog .wave-underline { --wave-surface: #111110; }
-.join-phd-apply:focus-within .wave-underline {
-  background-size: 0% 7px, 20px 7px;
-}
+/* Start the drawing fresh each time the popup opens. */
+.join-phd-dialog:not([open]) .wave-underline { animation: none; }
 @media (prefers-reduced-motion: reduce) {
-  .wave-underline { transition: none; }
+  .wave-underline {
+    animation: none;
+    background-size: 0% 7px, 20px 7px;
+  }
 }
 
 .text-linklike {
