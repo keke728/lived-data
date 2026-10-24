@@ -4,8 +4,8 @@
    -------------------------------------------------------------------------- */
 
 :root {
-  --bg: #050505;
-  --paper: #050505;
+  --bg: #131110;
+  --paper: #131110;
   --ink: #ffffff;
   --muted: rgba(255, 255, 255, 0.76);
   --line: rgba(255, 255, 255, 0.1);
@@ -1312,14 +1312,12 @@ main {
 
 .join-card:nth-child(2) {
   background:
-    radial-gradient(circle at 82% 20%, rgba(226, 24, 51, 0.1), transparent 26%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
     rgba(0, 0, 0, 0.42);
 }
 
 .join-card:nth-child(3) {
   background:
-    radial-gradient(circle at 18% 82%, rgba(241, 188, 66, 0.09), transparent 24%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
     rgba(0, 0, 0, 0.42);
 }
@@ -1648,7 +1646,6 @@ main {
   border: 0;
   border-left: 2px solid rgba(241, 188, 66, 0.72);
   background:
-    radial-gradient(circle at 12% 22%, rgba(241, 188, 66, 0.08), transparent 24%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01));
   color: #fff;
   font-family: "Didact Gothic", "Avenir Next", "Segoe UI", sans-serif;
@@ -2251,7 +2248,6 @@ main {
   border-right: 0;
   border-bottom: 0;
   background:
-    radial-gradient(circle at 12% 22%, rgba(241, 188, 66, 0.08), transparent 24%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01));
   color: inherit;
   cursor: pointer;
@@ -2431,7 +2427,6 @@ main {
 
 .research-theme-card:nth-child(3) {
   background:
-    radial-gradient(circle at 16% 78%, rgba(241, 188, 66, 0.08), transparent 24%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
     rgba(0, 0, 0, 0.42);
   margin-left: 0;
@@ -3903,4 +3898,73 @@ body.phd-dialog-open { overflow: hidden; }
   .person-bio-row {
     transition: none;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Paper: one even sheet of dark card stock behind every page (no glows).
+   -------------------------------------------------------------------------- */
+
+body,
+.page-shell {
+  background-color: var(--paper);
+  background-image: url("assets/paper-dark.jpg");
+  background-repeat: repeat;
+  background-size: 512px 512px;
+}
+
+/* The header stays visible on scroll as a soft veil of paper: it fades and un-blurs
+   toward its bottom edge instead of ending in a hard band or line. */
+.site-header,
+body.is-scrolled .site-header {
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.site-header::before {
+  content: none;
+  animation: none;
+}
+
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 -72px;
+  z-index: 0;
+  height: auto;
+  pointer-events: none;
+  filter: none;
+  /* Plain paper, no blur: a blurred band always shows a seam where it meets crisp paper. */
+  background: var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: 512px 512px;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.94) 0%,
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.62) 68%,
+    rgba(0, 0, 0, 0.3) 82%,
+    rgba(0, 0, 0, 0.1) 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.94) 0%,
+    rgba(0, 0, 0, 0.9) 50%,
+    rgba(0, 0, 0, 0.62) 68%,
+    rgba(0, 0, 0, 0.3) 82%,
+    rgba(0, 0, 0, 0.1) 92%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 420ms ease;
+}
+
+body.is-scrolled .site-header::after {
+  opacity: 1;
+}
+
+.site-header > * {
+  position: relative;
+  z-index: 1;
 }

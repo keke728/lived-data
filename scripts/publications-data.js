@@ -51,6 +51,7 @@ window.LDC_PUBLICATIONS = Object.freeze([
     venue: "IEEE VIS",
     year: 2026,
     type: "Short Paper",
+    award: "Best Short Paper Award",
     theme: "Affective",
     links: [
       { type: "paper", url: "https://arxiv.org/pdf/2607.01593" },

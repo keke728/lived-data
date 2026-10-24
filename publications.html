@@ -16,6 +16,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="alive.css" />
   </head>
   <body class="publications-page">
     <div class="page-shell">
@@ -58,12 +59,7 @@
           <section class="publication-collection" aria-labelledby="all-work-heading">
             <h2 id="all-work-heading" class="publication-section-heading">All Work</h2>
             <div class="publication-search-row">
-              <button id="publication-search-toggle" class="publication-search-toggle" type="button" aria-expanded="false" aria-controls="publication-search-panel">Search publications</button>
               <p id="publication-result-count" class="publication-result-count" role="status" aria-live="polite" aria-atomic="true"></p>
-              <div id="publication-search-panel" class="publication-search-panel" hidden>
-                <label class="sr-only" for="publication-search">Search publications</label>
-                <input id="publication-search" type="search" placeholder="Search titles, authors, or keywords" autocomplete="off" aria-controls="publication-grid" />
-              </div>
             </div>
             <div id="publication-filters" class="publication-filter-bar" aria-label="Filter publications">
               <div class="publication-filter-control" data-field="type">
@@ -93,5 +89,6 @@
     <script src="scripts/shared.js"></script>
     <script src="scripts/publications-data.js"></script>
     <script src="scripts/publications.js"></script>
+    <script src="scripts/alive.js"></script>
   </body>
 </html>

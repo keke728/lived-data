@@ -16,6 +16,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="alive.css" />
   </head>
   <body class="home-page">
     <div class="page-shell">
@@ -39,11 +40,9 @@
       <main id="top">
         <section class="hero">
           <div class="hero-mark reveal" aria-hidden="true">
-            <img
-              class="hero-logo"
-              src="ldc-seal.png"
-              alt="Lived Data Collective logo"
-            />
+            <div class="hero-logo seal-eyes">
+              <img class="seal-img" src="ldc-seal.png" alt="" />
+            </div>
           </div>
           <div class="hero-copy hero-copy-reference reveal">
             <h1 class="hero-reveal hero-reveal-1">The Lived Data Collective</h1>
@@ -74,6 +73,43 @@
               <h2 id="news-heading">What’s happening now</h2>
             </div>
             <div class="news-list">
+              <article class="news-item scroll-reveal scroll-reveal-delay-1">
+                <div class="news-meta">
+                  <p class="news-date">Sep 2026</p>
+                  <p class="news-type">Award</p>
+                </div>
+                <div class="news-media">
+                  <img
+                    src="assets/made-to-feel-thumbnail-viewer.png"
+                    alt="A viewer responding emotionally to a data visualization"
+                  />
+                </div>
+                <div class="news-copy">
+                  <h3>
+                    Best Short Paper Award at IEEE VIS
+                    <span class="news-badge news-badge-award"
+                      ><svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M7.5 3.5 H16.5 V9 C16.5 12 14.5 14 12 14 C9.5 14 7.5 12 7.5 9 Z" />
+                        <path d="M7.5 5.5 H4.5 C4.5 8.5 5.8 10 7.9 10.3" />
+                        <path d="M16.5 5.5 H19.5 C19.5 8.5 18.2 10 16.1 10.3" />
+                        <path d="M12 14 V17.5" />
+                        <path d="M8.5 20.5 C9.5 18.2 14.5 18.2 15.5 20.5 Z" /></svg
+                      >Award</span
+                    >
+                  </h3>
+                  <p>
+                    <a
+                      class="news-paper-link"
+                      href="https://arxiv.org/pdf/2607.01593"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      “Made to Feel”
+                    </a>
+                    received a Best Short Paper Award at IEEE VIS 2026.
+                  </p>
+                </div>
+              </article>
               <article class="news-item scroll-reveal scroll-reveal-delay-1">
                 <div class="news-meta">
                   <p class="news-date">Aug 2026</p>
@@ -137,7 +173,12 @@
               </article>
             </div>
             <div class="news-archive-link-wrap">
-              <a class="news-archive-link" href="news-archive.html">More updates</a>
+              <a class="news-archive-link" href="news-archive.html"
+                ><span class="news-archive-label">More updates</span
+                ><svg class="news-archive-arrow" viewBox="0 0 28 14" aria-hidden="true">
+                  <path d="M2 8.2 C 7 6.4, 13 8.6, 18 7.2 S 23.5 6.6, 25.5 7" />
+                  <path d="M20.2 2.6 C 22 4.4, 23.8 5.8, 25.6 7 C 23.6 8.1, 21.9 9.6, 20.4 11.6" /></svg
+              ></a>
             </div>
           </div>
         </section>
@@ -147,5 +188,6 @@
 
     <script src="scripts/shared.js"></script>
     <script src="scripts/home.js"></script>
+    <script src="scripts/alive.js"></script>
   </body>
 </html>

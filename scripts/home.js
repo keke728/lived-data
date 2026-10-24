@@ -21,3 +21,4 @@
 
   revealElements.forEach((element) => revealObserver.observe(element));
 })();
+

@@ -1,0 +1,954 @@
+/* --------------------------------------------------------------------------
+   Alive layer: the living mascot, smooth page transitions, calm motion.
+   Loaded after styles.css on every page, paired with scripts/alive.js.
+   To revert, remove the alive.css <link> and the alive.js <script> tags.
+   -------------------------------------------------------------------------- */
+
+:root {
+  --heart: #eb434a;
+  --sun: #f1bc42;
+  --sky: #8fb0e0;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --ease-saccade: cubic-bezier(0.25, 0.9, 0.3, 1);
+}
+
+/* ---------- Smooth page-to-page transitions (supported browsers) ---------- */
+
+@view-transition {
+  navigation: auto;
+}
+
+.site-header {
+  view-transition-name: site-header;
+}
+
+::view-transition-old(root) {
+  animation: alive-page-out 200ms ease both;
+}
+
+::view-transition-new(root) {
+  animation: alive-page-in 420ms var(--ease-out) both;
+}
+
+@keyframes alive-page-out {
+  to { opacity: 0; transform: translateY(-6px); }
+}
+
+@keyframes alive-page-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
+/* ---------- The seal (home hero): static artwork, only the eyes move ---------- */
+
+.seal-eyes {
+  position: relative;
+  aspect-ratio: 1;
+  cursor: pointer;
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  container-type: inline-size;
+  transition: scale 380ms var(--ease-pop);
+  animation:
+    seal-arrive 700ms var(--ease-pop) both,
+    seal-float 4.2s 700ms ease-in-out infinite;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.seal-eyes:hover {
+  scale: 1.03;
+}
+
+.seal-burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  width: var(--size, 14px);
+  height: var(--size, 14px);
+  pointer-events: none;
+}
+
+.seal-img {
+  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.45));
+}
+
+@keyframes seal-arrive {
+  from { opacity: 0; translate: 0 22px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes seal-float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -9px; }
+}
+
+.seal-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.seal-eyes .mascot-face .pupil {
+  transition: none;
+}
+
+/* Shared eye rig used by every heart on the site. */
+.mascot-face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.mascot-face .eyeball {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.mascot-face .pupil {
+  transition: transform 150ms var(--ease-saccade);
+}
+
+@keyframes mascot-breath {
+  0% { transform: scale(1); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+  40% { transform: scale(0.992, 1.016); animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1); }
+  95%, 100% { transform: scale(1); }
+}
+
+/* ---------- Scattered paper stars that float slowly around the hero ---------- */
+
+.hero {
+  position: relative;
+}
+
+.alive-confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.alive-confetti span {
+  position: absolute;
+  display: block;
+  width: var(--s, 12px);
+  height: var(--s, 12px);
+  color: var(--c, var(--sun));
+  opacity: 0;
+  animation:
+    alive-confetti-in 700ms var(--ease-pop) forwards,
+    alive-float var(--d, 14s) ease-in-out infinite;
+  animation-delay: var(--in, 0.8s), 0s;
+}
+
+.alive-confetti i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: alive-twinkle-star var(--tw, 2.6s) ease-in-out infinite;
+}
+
+.alive-confetti svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.alive-confetti .dot i {
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Each star breathes and catches the light on its own rhythm. */
+@keyframes alive-twinkle-star {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  40% { transform: scale(0.55) rotate(-25deg); opacity: 0.45; }
+  60% { transform: scale(1.18) rotate(12deg); opacity: 1; }
+}
+
+@keyframes alive-confetti-in {
+  from { opacity: 0; scale: 0.4; }
+  to { opacity: var(--o, 0.8); scale: 1; }
+}
+
+@keyframes alive-float {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(var(--fx, 14px), var(--fy, -22px)) rotate(var(--fr, 18deg)); }
+}
+
+.hero > :not(.alive-confetti) {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Twinkles around interior page titles ---------- */
+
+main h1.has-twinkles {
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+}
+
+main h1.has-twinkles.is-centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.alive-twinkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.alive-twinkles span {
+  position: absolute;
+  top: var(--y, 0);
+  display: block;
+  width: var(--s, 8px);
+  height: var(--s, 8px);
+  color: var(--c, var(--sun));
+  opacity: 0.4;
+  animation: alive-sky-twinkle var(--tw, 4s) var(--delay, 0s) ease-in-out infinite;
+}
+
+.alive-twinkles span[data-side="left"] {
+  left: var(--x, 0);
+}
+
+.alive-twinkles span[data-side="right"] {
+  right: var(--x, 0);
+}
+
+.alive-twinkles svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.alive-twinkles .dot {
+  border-radius: 50%;
+  background: currentColor;
+}
+
+@keyframes alive-sky-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.75) rotate(0deg); }
+  50% { opacity: 0.95; transform: scale(1.08) rotate(20deg); }
+}
+
+/* ---------- Hand-drawn squiggle under page titles ---------- */
+
+.alive-squiggle {
+  display: block;
+  width: 132px;
+  height: 14px;
+  margin: 10px auto 0;
+  overflow: visible;
+}
+
+.alive-squiggle path {
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-dasharray: 220;
+  stroke-dashoffset: 220;
+  animation: alive-draw 1.1s 350ms var(--ease-out) forwards;
+}
+
+@keyframes alive-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Underlines in running text (hero highlight, PhD "apply" line, "More updates") use the same
+   loose, hand-drawn pen stroke as the page titles and cards, drifting slowly. */
+.wave-underline {
+  padding-bottom: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='9' viewBox='0 0 64 9'%3E%3Cpath d='M0 4.6 C 7 1.6, 13 7.8, 23 4.4 S 39 1.6, 47 4.8 S 58 6.9, 64 4.6' fill='none' stroke='%23f1bc42' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-position: 0 bottom;
+  background-size: 64px 9px;
+  animation: alive-ink-drift 7s linear infinite;
+}
+
+/* The pen stroke slowly drifts along, one 64px stroke every few seconds. */
+@keyframes alive-ink-drift {
+  from { background-position: 0 bottom; }
+  to { background-position: 64px bottom; }
+}
+
+.news-archive-link:hover .news-archive-label,
+.news-archive-link:focus-visible .news-archive-label {
+  animation: alive-ink-drift 2.6s linear infinite;
+}
+
+@keyframes alive-wave-flow {
+  to { background-position: 20px bottom; }
+}
+
+/* ---------- Content rises in as it scrolls into view ---------- */
+
+.alive-rise {
+  opacity: 0;
+  translate: 0 22px;
+  transition:
+    opacity 700ms ease,
+    translate 800ms var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 80ms);
+}
+
+.alive-rise.is-in {
+  opacity: 1;
+  translate: none;
+}
+
+/* ---------- Cards: a still, quiet hover ----------
+   Research themes, publications and Join Us cards don't move or change color on hover;
+   the sheet only brightens very slightly. (alive.js adds .alive-card.) */
+
+.alive-card {
+  transition:
+    transform 520ms var(--ease-out),
+    border-color 320ms ease,
+    box-shadow 520ms var(--ease-out);
+}
+
+.alive-card.alive-card,
+.alive-card.alive-card:hover,
+.alive-card.alive-card:focus-within {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--alive-card-line, rgba(150, 150, 150, 0.34));
+}
+
+/* The bordered cards (not news rows) lift 2px with a soft shadow, and brighten a touch:
+   a slightly lighter neutral edge and a faint lift in tone across the paper. No color, no glow. */
+:is(.research-theme-card, .publication-card, .join-card).alive-card.alive-card:hover,
+:is(.research-theme-card, .publication-card, .join-card).alive-card.alive-card:focus-within {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 0 0 100vmax rgba(255, 255, 255, 0.022),
+    0 10px 22px -12px rgba(0, 0, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+/* One interaction language for every card on the site (research themes, publications,
+   Join Us, news): the card stays still and unchanged; only the pen stroke under its title
+   draws in. Card-specific hover colors from styles.css are neutralized here. */
+.publication-card.alive-card.alive-card:hover,
+.publication-card.alive-card.alive-card:focus-within {
+  background: var(--alive-card-bg, rgba(255, 255, 255, 0.012));
+}
+
+.publication-grid .publication-card.alive-card {
+  --alive-card-bg: linear-gradient(180deg, #171717 0%, #0b0b0b 100%);
+}
+
+.publication-card-featured.alive-card {
+  --alive-card-bg: transparent;
+}
+
+.alive-card .publication-title-link:hover,
+.alive-card .publication-title-link:focus-visible {
+  color: inherit;
+}
+
+/* Join Us cards: no yellow border, text tint or tilt on hover (the pen stroke is the hover). */
+body:not(.phd-dialog-open) .join-card.alive-card:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    inset 0 0 0 100vmax rgba(255, 255, 255, 0.022),
+    0 10px 22px -12px rgba(0, 0, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+body:not(.phd-dialog-open) .join-card.alive-card:hover :is(.join-card-kicker, h2) {
+  color: #ffffff;
+}
+
+body:not(.phd-dialog-open) .join-card.alive-card:hover p {
+  color: inherit;
+}
+
+/* Publication titles sit close to the authors line, so their stroke is a little finer. */
+.card-squiggle.is-centered {
+  left: 50%;
+  translate: -50% 0;
+}
+
+.publication-card .card-squiggle {
+  top: calc(100% - 1px);
+  width: 64px;
+  height: 7px;
+}
+
+/* Hand-drawn hover: an ochre pen stroke draws itself under the title, then un-draws. */
+.alive-card :is(h2, h3, h4):has(.card-squiggle) {
+  position: relative;
+}
+
+.card-squiggle {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 1px);
+  width: 76px;
+  height: 9px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.card-squiggle path {
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-dasharray: 110;
+  stroke-dashoffset: 110;
+  transition: stroke-dashoffset 380ms cubic-bezier(0.55, 0, 0.45, 1);
+}
+
+.alive-card:hover .card-squiggle path,
+.alive-card:focus-within .card-squiggle path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.research-theme-card.alive-card,
+.join-card.alive-card {
+  --alive-card-line: rgba(150, 150, 150, 0.34);
+}
+
+.publication-card.alive-card {
+  --alive-card-line: var(--publication-card-line);
+}
+
+.news-media:hover {
+  transform: translateY(-2px);
+}
+
+.news-media:hover img {
+  transform: none;
+}
+
+.button,
+.news-media {
+  transition-duration: 240ms;
+  transition-timing-function: var(--ease-out);
+}
+
+/* Slow ambient breathing on the research theme circles (no hover swell). */
+.research-theme-card::after {
+  animation: alive-breathe 8s ease-in-out infinite;
+}
+
+.research-theme-card:nth-child(2)::after { animation-delay: -2.6s; }
+.research-theme-card:nth-child(3)::after { animation-delay: -5.2s; }
+
+@keyframes alive-breathe {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.06; }
+}
+
+/* Portrait outlines slowly morph like hand-cut paper. */
+.person-portrait::before {
+  animation: alive-blob 12s ease-in-out infinite alternate;
+}
+
+.person-tile:nth-child(2n) .person-portrait::before { animation-duration: 14s; animation-delay: -3s; }
+.person-tile:nth-child(3n) .person-portrait::before { animation-duration: 10s; animation-delay: -6s; }
+
+@keyframes alive-blob {
+  0% { border-radius: 56% 44% 47% 53% / 49% 57% 43% 51%; }
+  33% { border-radius: 44% 56% 58% 42% / 55% 45% 55% 45%; }
+  66% { border-radius: 51% 49% 41% 59% / 43% 58% 42% 57%; }
+  100% { border-radius: 60% 40% 52% 48% / 52% 48% 56% 44%; }
+}
+
+/* The Join Us character hops gently (its hover flip stays as is). */
+.join-hero-figure img {
+  animation: alive-hop 4.2s ease-in-out infinite;
+}
+
+@keyframes alive-hop {
+  0%, 64%, 100% { translate: 0 0; }
+  72% { translate: 0 -9px; }
+  80% { translate: 0 0; }
+  85% { translate: 0 -3px; }
+  90% { translate: 0 0; }
+}
+
+/* ---------- Peeking heart: says hello at the bottom of every page ---------- */
+
+main {
+  padding-bottom: 24px;
+}
+
+.alive-peek {
+  position: fixed;
+  right: clamp(16px, 4vw, 44px);
+  bottom: 0;
+  z-index: 30;
+  width: 78px;
+  height: 79px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform: translateY(110%);
+  transition: transform 700ms var(--ease-pop);
+  view-transition-name: alive-peek;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.alive-peek.is-peeking {
+  transform: translateY(26%);
+}
+
+.alive-peek.is-peeking:hover,
+.alive-peek.is-peeking:focus-visible {
+  transform: translateY(14%);
+}
+
+.alive-peek:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.alive-peek-body {
+  position: absolute;
+  inset: 0;
+  display: block;
+  rotate: -8deg;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.45));
+}
+
+.alive-peek-body img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.alive-peek.is-peeking .alive-peek-body {
+  animation: alive-peek-wiggle 1.1s 550ms ease-in-out 1;
+}
+
+@keyframes alive-peek-wiggle {
+  0%, 100% { rotate: -8deg; }
+  30% { rotate: -14deg; }
+  60% { rotate: -3deg; }
+}
+
+/* ---------- Header companion: the same heart beside the wordmark on every page ---------- */
+
+/* Heart and wordmark read as one lockup: the heart is sized to the three lines of text,
+   tucked close, and tilted like the red "Data". */
+.brand-lockup,
+.brand-lockup:has(.header-heart) {
+  --wordmark-size: clamp(1.05rem, 1.6vw, 1.45rem);
+  flex-direction: row;
+  align-items: center;
+  gap: calc(var(--wordmark-size) * 0.32);
+}
+
+/* Keep "Lived" from sliding into the heart on hover; the pair moves together instead. */
+.brand-lockup:has(.header-heart) .wordmark:hover span:nth-child(1),
+.brand-lockup:has(.header-heart) .wordmark:focus-visible span:nth-child(1) {
+  transform: rotate(-4deg);
+}
+
+.brand-lockup:has(.wordmark:hover) .header-heart,
+.brand-lockup:has(.wordmark:focus-visible) .header-heart {
+  rotate: -2deg;
+  translate: 0 -2px;
+}
+
+/* Only the heart itself shows here (legs are cropped away at this size). */
+.header-heart {
+  --w: calc(var(--wordmark-size, 1.45rem) * 2.05);
+  position: relative;
+  display: block;
+  width: var(--w);
+  height: calc(var(--w) * 0.806);
+  flex: none;
+  overflow: visible;
+  clip-path: inset(-40% -20% 0 -20%);
+  rotate: -6deg;
+  translate: 0 2px;
+  transition: rotate 420ms var(--ease-pop), translate 420ms var(--ease-pop);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header-heart-hop,
+.header-heart-breath {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: var(--w);
+  height: calc(var(--w) * 1.012);
+  transform-origin: 38% 79%;
+}
+
+.header-heart-breath {
+  animation: mascot-breath 3.8s infinite;
+}
+
+.header-heart img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 720px) {
+
+}
+
+.alive-peek-label {
+  position: absolute;
+  right: 92%;
+  top: 2px;
+  padding: 5px 10px;
+  border-radius: 12px 12px 2px 12px;
+  background: #f4efe6;
+  color: #161312;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 220ms ease;
+  pointer-events: none;
+}
+
+.alive-peek:hover .alive-peek-label,
+.alive-peek:focus-visible .alive-peek-label {
+  opacity: 1;
+}
+
+@media (max-width: 720px) {
+  .alive-peek {
+    width: 60px;
+    height: 61px;
+  }
+}
+
+/* ---------- Finishing touches: softer dividers, rounder controls, a quiet ending ---------- */
+
+/* A section divider that fades in from both edges and parts around a small star. */
+.news-shell {
+  padding-top: 64px;
+}
+
+.news-shell::before {
+  top: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.14) 22%,
+    rgba(255, 255, 255, 0.14) 46.5%,
+    rgba(255, 255, 255, 0) 48.6%,
+    rgba(255, 255, 255, 0) 51.4%,
+    rgba(255, 255, 255, 0.14) 53.5%,
+    rgba(255, 255, 255, 0.14) 78%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.news-shell::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 13px;
+  height: 13px;
+  margin-left: -6.5px;
+  background: var(--sun);
+  opacity: 0.85;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* The archive title matches every other page title. */
+.news-heading h1 {
+  margin: 0;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: clamp(2.1rem, 3.6vw, 3rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.news-heading .alive-squiggle {
+  margin-top: 6px;
+}
+
+/* Rounder, friendlier controls to match the soft cards and hand-cut portraits. */
+.button,
+.button-outline,
+.join-apply-button,
+.join-phd-trigger {
+  border-radius: 999px;
+}
+
+.button-outline {
+  padding: 0 30px;
+}
+
+.publication-filter-trigger,
+.publication-filter-reset {
+  border-radius: 8px;
+}
+
+.publication-filter-menu {
+  border-radius: 10px;
+}
+
+/* Links ease their color instead of snapping. */
+a {
+  transition: color 200ms ease, text-decoration-color 200ms ease, opacity 200ms ease;
+}
+
+/* A quiet ending on every page: one small line that settles in close under the content. */
+.alive-footer {
+  position: relative;
+  z-index: 1;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 8px clamp(20px, 4vw, 48px) 44px;
+  display: flex;
+  justify-content: center;
+}
+
+.alive-footer p {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.58);
+  font-family: "Didact Gothic", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  translate: 0 6px;
+  transition: opacity 900ms ease, translate 900ms var(--ease-out);
+}
+
+.alive-footer p::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  flex: none;
+  background: var(--sun);
+  opacity: 0.75;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.alive-footer.is-in p {
+  opacity: 1;
+  translate: none;
+}
+
+/* "More updates": hand-drawn, in the same language as the title squiggles and the hero
+   underline: an ochre wave under the words and a loosely drawn arrow. On hover the wave
+   drifts and the arrow steps forward. */
+.news-archive-link {
+  gap: 10px;
+  padding: 4px 2px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--ink);
+  font-size: 0.98rem;
+  letter-spacing: 0.02em;
+}
+
+.news-archive-link::after {
+  content: none;
+  animation: none;
+}
+
+.news-archive-label {
+  padding-bottom: 8px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='9' viewBox='0 0 64 9'%3E%3Cpath d='M0 4.6 C 7 1.6, 13 7.8, 23 4.4 S 39 1.6, 47 4.8 S 58 6.9, 64 4.6' fill='none' stroke='%23f1bc42' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 bottom / 64px 9px;
+}
+
+.news-archive-arrow {
+  width: 28px;
+  height: 14px;
+  margin-bottom: 6px;
+  flex: none;
+  overflow: visible;
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: translate 520ms var(--ease-out);
+}
+
+.news-archive-link:hover,
+.news-archive-link:focus-visible {
+  color: var(--ink);
+  background: none;
+  outline: none;
+}
+
+.news-archive-link:hover .news-archive-arrow,
+.news-archive-link:focus-visible .news-archive-arrow {
+  translate: 4px 0;
+}
+
+.news-archive-link:focus-visible .news-archive-label {
+  outline: 2px solid var(--sun);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Award badge: ochre, with a small hand-drawn trophy. */
+.news-badge.news-badge-award {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-color: rgba(241, 188, 66, 0.55);
+  color: var(--sun);
+}
+
+.news-badge-award svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Award badge inside a publication's meta line. */
+.publication-card-meta .publication-award {
+  margin-left: 0;
+  padding: 1px 8px;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.publication-card-meta .publication-award svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ---------- Header menu: a hand-drawn squiggle instead of a straight line ----------
+   One mark, one color: the text always stays white. Hover wipes an ochre squiggle in
+   from the left; the current page keeps its squiggle drawn. */
+.site-nav a::after {
+  bottom: -9px;
+  height: 6px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='6' viewBox='0 0 14 6'%3E%3Cpath d='M0 3 Q3.5 -0.6 7 3 T14 3' fill='none' stroke='%23f1bc42' stroke-width='1.4'/%3E%3C/svg%3E") repeat-x 0 center / 14px 6px;
+  transform: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 520ms var(--ease-out);
+}
+
+.site-nav a:hover,
+.site-nav a:focus-visible {
+  color: #ffffff;
+  outline: none;
+}
+
+.site-nav a[aria-current="page"],
+.site-nav a[aria-current="page"]:hover {
+  color: #ffffff;
+}
+
+.site-nav a:hover::after,
+.site-nav a:focus-visible::after,
+.site-nav a[aria-current="page"]::after {
+  transform: none;
+  clip-path: inset(0 0 0 0);
+}
+
+.site-nav a:focus-visible {
+  text-decoration: none;
+  box-shadow: 0 0 0 2px var(--sun);
+  border-radius: 3px;
+}
+
+/* ---------- Respect people who prefer less motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+
+  .seal-eyes,
+  .wave-underline,
+  .research-theme-card::after,
+  .person-portrait::before,
+  .join-hero-figure img,
+  .header-heart-breath,
+  .alive-peek-body {
+    animation: none !important;
+  }
+
+  .alive-confetti span {
+    animation: none;
+    opacity: var(--o, 0.8);
+  }
+
+  .alive-squiggle path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  .alive-card,
+  .card-squiggle path {
+    transition: none !important;
+  }
+
+  .alive-card.alive-card:hover,
+  .alive-card.alive-card:focus-within,
+  body:not(.phd-dialog-open) .join-card.alive-card:hover {
+    transform: none;
+  }
+
+  .alive-confetti i,
+  .alive-twinkles span {
+    animation: none;
+  }
+
+  .alive-twinkles span {
+    opacity: 0.4;
+  }
+
+  .site-nav a::after {
+    transition: none;
+  }
+
+  .news-archive-arrow {
+    transition: none;
+  }
+
+  .news-archive-link .news-archive-label {
+    animation: none !important;
+  }
+
+  .alive-card:hover,
+  .alive-card:focus-within {
+    transform: none;
+  }
+
+  .alive-rise,
+  .alive-footer p {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+
+  .alive-peek {
+    transition: none;
+  }
+}

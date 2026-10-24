@@ -4,9 +4,6 @@
   const publicationGrid = document.querySelector("#publication-grid");
   const publicationFilters = document.querySelector("#publication-filters");
   const filterReset = document.querySelector("#publication-filter-reset");
-  const publicationSearch = document.querySelector("#publication-search");
-  const searchToggle = document.querySelector("#publication-search-toggle");
-  const searchPanel = document.querySelector("#publication-search-panel");
   const resultCount = document.querySelector("#publication-result-count");
   const featuredPosition = document.querySelector("#featured-position");
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -70,12 +67,6 @@
   );
 
   const getFilterValue = (work, field) => String(work[field]);
-  const normalizeSearch = (text) => text.replace(/&nbsp;/g, " ").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  const searchIndex = new Map(publications.map((work) => [work.id, normalizeSearch([
-    work.title, work.summary, ...work.authors, ...work.authors.map(formatAuthorName),
-    work.venue, work.year, work.type, work.theme,
-  ].join(" "))]));
-
   const createPublicationCard = (work, featured = false) => {
     const cardClass = [
       "publication-card",
@@ -111,11 +102,15 @@
       return `<a class="publication-resource-link" href="${link.url}" target="_blank" rel="noreferrer" aria-label="${label}">${icon}</a>`;
     }).join("");
 
+    /* Optional award: an ochre badge with a small trophy, matching the home page news. */
+    const award = work.award
+      ? `<span class="news-badge news-badge-award publication-award"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 3.5 H16.5 V9 C16.5 12 14.5 14 12 14 C9.5 14 7.5 12 7.5 9 Z" /><path d="M7.5 5.5 H4.5 C4.5 8.5 5.8 10 7.9 10.3" /><path d="M16.5 5.5 H19.5 C19.5 8.5 18.2 10 16.1 10.3" /><path d="M12 14 V17.5" /><path d="M8.5 20.5 C9.5 18.2 14.5 18.2 15.5 20.5 Z" /></svg>${work.award}</span>`
+      : "";
     return `<article class="${cardClass}">
       <div class="${thumbnailClass}"${imageStyle}>${work.thumbnail ? `<img src="${work.thumbnail}" alt="" />` : ""}</div>
       <div class="publication-card-copy">
         <div class="publication-card-primary">
-          <p class="publication-card-meta"><span class="publication-type-tag">${work.type}</span><span>${work.venue} · ${work.year}</span></p>
+          <p class="publication-card-meta"><span class="publication-type-tag">${work.type}</span><span>${work.venue} · ${work.year}</span>${award}</p>
           <${featured ? "h3" : "h4"}>${title}</${featured ? "h3" : "h4"}>
           <p class="publication-card-summary">${work.summary}</p>
           <p class="publication-card-authors">${formatAuthors(work, featured)}</p>
@@ -171,12 +166,10 @@
   };
 
   const renderArchive = () => {
-    const searchTerms = normalizeSearch(publicationSearch.value).trim().split(/\s+/).filter(Boolean);
     const visibleWorks = publications.filter((work) =>
-      searchTerms.every((term) => searchIndex.get(work.id).includes(term)) &&
       Object.entries(filterState).every(([field, value]) => !value || getFilterValue(work, field) === value)
     );
-    filterReset.classList.toggle("has-active-filters", searchTerms.length > 0 || Object.values(filterState).some(Boolean));
+    filterReset.classList.toggle("has-active-filters", Object.values(filterState).some(Boolean));
     resultCount.textContent = `${visibleWorks.length} of ${publications.length} publications`;
     const yearGroups = new Map();
     visibleWorks.forEach((work) => {
@@ -188,7 +181,7 @@
           <h3 id="publication-year-${year}" class="publication-year-heading">${year}</h3>
           <div class="publication-year-papers">${works.map((work) => createPublicationCard(work)).join("")}</div>
         </section>`).join("")
-      : '<p class="publication-empty">No publications found. Try another search or clear the filters.</p>';
+      : '<p class="publication-empty">No publications match these filters. Try clearing them.</p>';
   };
 
   const populateFilters = () => {
@@ -218,7 +211,6 @@
   };
 
   const resetFilters = () => {
-    publicationSearch.value = "";
     Object.keys(filterState).forEach((field) => {
       const control = publicationFilters.querySelector(`[data-field="${field}"]`);
       const trigger = control.querySelector(".publication-filter-trigger");
@@ -253,27 +245,6 @@
   });
 
   filterReset.addEventListener("click", resetFilters);
-  publicationSearch.addEventListener("input", renderArchive);
-
-  const setSearchExpanded = (expanded) => {
-    searchPanel.hidden = !expanded;
-    searchToggle.setAttribute("aria-expanded", String(expanded));
-    if (expanded) {
-      closeFilterMenus();
-      publicationSearch.focus();
-    } else {
-      publicationSearch.value = "";
-      renderArchive();
-      searchToggle.focus();
-    }
-  };
-  searchToggle.addEventListener("click", () => setSearchExpanded(searchPanel.hidden));
-  publicationSearch.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      setSearchExpanded(false);
-    }
-  });
 
   featuredDots.forEach((dot, index) => {
     dot.addEventListener("click", () => {
