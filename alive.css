@@ -5,6 +5,7 @@
    -------------------------------------------------------------------------- */
 
 :root {
+  --ease-pen: cubic-bezier(0.33, 0, 0.2, 1);
   --heart: #eb434a;
   --sun: #f1bc42;
   --sky: #8fb0e0;
@@ -48,9 +49,7 @@
   transform: perspective(900px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
   container-type: inline-size;
   transition: scale 380ms var(--ease-pop);
-  animation:
-    seal-arrive 700ms var(--ease-pop) both,
-    seal-float 4.2s 700ms ease-in-out infinite;
+  animation: seal-arrive 700ms var(--ease-pop) both;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
@@ -76,11 +75,6 @@
 @keyframes seal-arrive {
   from { opacity: 0; translate: 0 22px; }
   to { opacity: 1; translate: 0 0; }
-}
-
-@keyframes seal-float {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -9px; }
 }
 
 .seal-img {
@@ -139,10 +133,7 @@
   height: var(--s, 12px);
   color: var(--c, var(--sun));
   opacity: 0;
-  animation:
-    alive-confetti-in 700ms var(--ease-pop) forwards,
-    alive-float var(--d, 14s) ease-in-out infinite;
-  animation-delay: var(--in, 0.8s), 0s;
+  animation: alive-confetti-in 700ms var(--in, 0.8s) var(--ease-pop) forwards;
 }
 
 .alive-confetti i {
@@ -256,7 +247,22 @@ main h1.has-twinkles.is-centered {
   stroke-linecap: round;
   stroke-dasharray: 220;
   stroke-dashoffset: 220;
-  animation: alive-draw 1.1s 350ms var(--ease-out) forwards;
+  animation: alive-draw 950ms 300ms var(--ease-pen) forwards;
+}
+
+/* When the line sits under a single word in the title. */
+.alive-underline-word {
+  position: relative;
+  display: inline-block;
+}
+
+.alive-underline-word .alive-squiggle {
+  position: absolute;
+  left: -2%;
+  width: 104% !important;
+  top: calc(100% - 2px);
+  height: 12px;
+  margin: 0;
 }
 
 @keyframes alive-draw {
@@ -271,7 +277,7 @@ main h1.has-twinkles.is-centered {
   background-repeat: repeat-x;
   background-position: 0 bottom;
   background-size: 64px 9px;
-  animation: alive-ink-drift 7s linear infinite;
+  animation: none;
 }
 
 /* The pen stroke slowly drifts along, one 64px stroke every few seconds. */
@@ -280,10 +286,6 @@ main h1.has-twinkles.is-centered {
   to { background-position: 64px bottom; }
 }
 
-.news-archive-link:hover .news-archive-label,
-.news-archive-link:focus-visible .news-archive-label {
-  animation: alive-ink-drift 2.6s linear infinite;
-}
 
 @keyframes alive-wave-flow {
   to { background-position: 20px bottom; }
@@ -318,7 +320,7 @@ main h1.has-twinkles.is-centered {
 
 .alive-card.alive-card,
 .alive-card.alive-card:hover,
-.alive-card.alive-card:focus-within {
+.alive-card.alive-card:has(:focus-visible) {
   transform: none;
   box-shadow: none;
   border-color: var(--alive-card-line, rgba(150, 150, 150, 0.34));
@@ -327,7 +329,7 @@ main h1.has-twinkles.is-centered {
 /* The bordered cards (not news rows) lift 2px with a soft shadow, and brighten a touch:
    a slightly lighter neutral edge and a faint lift in tone across the paper. No color, no glow. */
 :is(.research-theme-card, .publication-card, .join-card).alive-card.alive-card:hover,
-:is(.research-theme-card, .publication-card, .join-card).alive-card.alive-card:focus-within {
+:is(.research-theme-card, .publication-card, .join-card).alive-card.alive-card:has(:focus-visible) {
   border-color: rgba(255, 255, 255, 0.5);
   box-shadow:
     inset 0 0 0 100vmax rgba(255, 255, 255, 0.022),
@@ -339,7 +341,7 @@ main h1.has-twinkles.is-centered {
    Join Us, news): the card stays still and unchanged; only the pen stroke under its title
    draws in. Card-specific hover colors from styles.css are neutralized here. */
 .publication-card.alive-card.alive-card:hover,
-.publication-card.alive-card.alive-card:focus-within {
+.publication-card.alive-card.alive-card:has(:focus-visible) {
   background: var(--alive-card-bg, rgba(255, 255, 255, 0.012));
 }
 
@@ -441,7 +443,7 @@ body:not(.phd-dialog-open) .join-card.alive-card:hover p {
 
 /* Slow ambient breathing on the research theme circles (no hover swell). */
 .research-theme-card::after {
-  animation: alive-breathe 8s ease-in-out infinite;
+  animation: none;
 }
 
 .research-theme-card:nth-child(2)::after { animation-delay: -2.6s; }
@@ -595,7 +597,7 @@ main {
 }
 
 .header-heart-breath {
-  animation: mascot-breath 3.8s infinite;
+  animation: none;
 }
 
 .header-heart img {
@@ -773,8 +775,28 @@ a {
 }
 
 .news-archive-label {
+  position: relative;
   padding-bottom: 8px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='9' viewBox='0 0 64 9'%3E%3Cpath d='M0 4.6 C 7 1.6, 13 7.8, 23 4.4 S 39 1.6, 47 4.8 S 58 6.9, 64 4.6' fill='none' stroke='%23f1bc42' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 bottom / 64px 9px;
+}
+
+.news-archive-label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 9px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='9' viewBox='0 0 64 9'%3E%3Cpath d='M0 4.6 C 7 1.6, 13 7.8, 23 4.4 S 39 1.6, 47 4.8 S 58 6.9, 64 4.6' fill='none' stroke='%23f1bc42' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 center / 64px 9px;
+}
+
+.news-archive-link:hover .news-archive-label::after,
+.news-archive-link:focus-visible .news-archive-label::after {
+  animation: alive-pen-redraw 620ms var(--ease-pen);
+}
+
+@keyframes alive-pen-redraw {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
 }
 
 .news-archive-arrow {
@@ -788,7 +810,7 @@ a {
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: translate 520ms var(--ease-out);
+  transition: translate 620ms var(--ease-pen);
 }
 
 .news-archive-link:hover,
@@ -841,6 +863,53 @@ a {
   height: 12px;
 }
 
+/* ---------- Landing intro: left-aligned and justified, with even word spacing ----------
+   Hyphenation lets long words break across lines, so justification no longer has to
+   stretch the gaps between words. */
+.hero-copy-reference .hero-text-wide {
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  hyphenate-limit-chars: 6 3 3;
+  text-wrap: pretty;
+}
+
+.hero-copy-reference .hero-intro-line {
+  margin-bottom: 10px;
+}
+/* ---------- People: lab members and collaborators as two gentle groups ----------
+   Each group opens with a tiny ochre star and a quiet label; a soft hairline separates them. */
+.people-group-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 40px;
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "Didact Gothic", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  text-transform: none;
+}
+
+.people-group-heading::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: none;
+  background: var(--sun);
+  opacity: 0.85;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Space alone separates the two groups. */
+.people-group-collaborators {
+  margin-top: 120px;
+}
+
 /* ---------- Header menu: a hand-drawn squiggle instead of a straight line ----------
    One mark, one color: the text always stays white. Hover wipes an ochre squiggle in
    from the left; the current page keeps its squiggle drawn. */
@@ -850,7 +919,7 @@ a {
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='6' viewBox='0 0 14 6'%3E%3Cpath d='M0 3 Q3.5 -0.6 7 3 T14 3' fill='none' stroke='%23f1bc42' stroke-width='1.4'/%3E%3C/svg%3E") repeat-x 0 center / 14px 6px;
   transform: none;
   clip-path: inset(0 100% 0 0);
-  transition: clip-path 520ms var(--ease-out);
+  transition: clip-path 620ms var(--ease-pen);
 }
 
 .site-nav a:hover,
@@ -877,6 +946,385 @@ a {
   border-radius: 3px;
 }
 
+/* Header heart: every few seconds it gives a small, happy sway (a tilt one way, a little
+   bounce, a tilt back) and then rests. Lively, but quiet most of the time. */
+.header-heart-hop {
+  transform-origin: 40% 85%;
+  animation: header-heart-sway 5.5s 1.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes header-heart-sway {
+  0%, 70%, 100% { transform: rotate(0deg) translateY(0); }
+  76% { transform: rotate(-9deg) translateY(-2px); }
+  83% { transform: rotate(7deg) translateY(-3px); }
+  90% { transform: rotate(-3deg) translateY(0); }
+  95% { transform: rotate(1deg); }
+}
+
+/* Quiet header: the red "Data" in the wordmark keeps its tilt but no longer pulses. */
+.wordmark span:nth-child(2) {
+  animation: none;
+}
+
+/* ---------- One section-label style across the site ----------
+   "Our Perspective", "Featured Work" and "All Work" use the same quiet label as
+   "Lab Members" / "Collaborators": a tiny ochre star and soft white text, no box or bar. */
+.publication-section-heading,
+.research-perspective-trigger {
+  gap: 12px;
+  padding: 4px 0;
+  border: 0;
+  background: none;
+  transform: none;
+}
+
+.publication-section-heading,
+.research-perspective h2 {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: none;
+}
+
+.publication-section-heading::before,
+.research-perspective-trigger::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: none;
+  background: var(--sun);
+  opacity: 0.85;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.publication-section-heading:hover,
+.research-perspective-trigger:hover,
+.research-perspective-trigger:focus-visible {
+  border: 0;
+  background: none;
+  color: #ffffff;
+  transform: none;
+}
+
+.research-perspective-trigger:hover h2,
+.research-perspective-trigger:focus-visible h2 {
+  color: #ffffff;
+}
+
+/* The News archive opens with its title; the star divider belongs above Home's news only. */
+.news-archive-page .news-shell::before,
+.news-archive-page .news-shell::after {
+  content: none;
+}
+
+.news-archive-page .news-shell {
+  padding-top: 0;
+}
+
+/* Join Us: the Students card reads like the other two cards (no bold paragraph). */
+.join-card p strong {
+  font-weight: inherit;
+}
+
+/* People: less empty space below the last row. */
+.people-main {
+  padding-bottom: 120px;
+}
+
+/* ---------- Prospective PhD popup: a sheet of the same paper, gently arriving ----------
+   Same dark paper and quiet borders as the cards; IM Fell title with the pen underline;
+   star bullets; a white outline "Apply now" pill like Join Us; soft open and close. */
+.join-phd-dialog {
+  width: min(620px, calc(100% - 32px));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  background: var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: 512px 512px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8);
+}
+
+.join-phd-dialog[open] {
+  animation: phd-sheet-in 520ms var(--ease-pen) both;
+}
+
+.join-phd-dialog.is-closing {
+  animation: phd-sheet-out 260ms ease-in both;
+}
+
+.join-phd-dialog::backdrop {
+  background: rgba(8, 7, 6, 0.72);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: phd-backdrop-in 420ms ease both;
+}
+
+.join-phd-dialog.is-closing::backdrop {
+  animation: phd-backdrop-out 260ms ease both;
+}
+
+@keyframes phd-sheet-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes phd-sheet-out {
+  to { opacity: 0; transform: translateY(8px) scale(0.99); }
+}
+
+@keyframes phd-backdrop-in {
+  from { opacity: 0; }
+}
+
+@keyframes phd-backdrop-out {
+  to { opacity: 0; }
+}
+
+.join-phd-content {
+  padding: clamp(28px, 5vw, 44px);
+}
+
+.join-phd-close {
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-color: rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.4rem;
+  line-height: 1;
+  transition: border-color 240ms ease, color 240ms ease, rotate 420ms var(--ease-pen);
+}
+
+.join-phd-close:hover,
+.join-phd-close:focus-visible {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  rotate: 90deg;
+}
+
+/* Eyebrow: the same quiet star label used for sections across the site. */
+.join-phd-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 48px 14px 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.92rem;
+  letter-spacing: 0.05em;
+  text-transform: none;
+}
+
+.join-phd-eyebrow::before,
+.join-phd-directions li::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  flex: none;
+  background: var(--sun);
+  opacity: 0.85;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 0 C13 7 17 11 24 12 C17 13 13 17 12 24 C11 17 7 13 0 12 C7 11 11 7 12 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.join-phd-dialog h2 {
+  margin: 0 40px 26px 0;
+  font: 400 clamp(1.9rem, 4.6vw, 2.5rem)/1.1 "IM Fell English", Georgia, serif;
+}
+
+.join-phd-dialog p.join-phd-lead strong {
+  font-weight: 400;
+  color: #ffffff;
+}
+
+.join-phd-directions {
+  gap: 16px;
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.join-phd-directions li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: start;
+}
+
+.join-phd-directions li::before {
+  margin-top: 0.45em;
+  grid-row: span 2;
+}
+
+.join-phd-directions strong {
+  margin-bottom: 2px;
+  font: 400 1.25rem/1.25 "IM Fell English", Georgia, serif;
+}
+
+.join-phd-dialog p.join-phd-apply {
+  justify-content: space-between;
+  gap: 16px 20px;
+  margin-top: 30px;
+}
+
+.join-phd-dialog p.join-phd-apply strong {
+  font-weight: 400;
+}
+
+.join-phd-program,
+.join-phd-program:hover,
+.join-phd-program:focus-visible {
+  min-height: 44px;
+  padding: 0 24px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  font-weight: 400;
+  box-shadow: none;
+}
+
+.join-phd-program:hover,
+.join-phd-program:focus-visible {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+/* ---------- Publications list: an airy, ruled index instead of stacked boxes ----------
+   Each paper is a row separated by a soft hairline; thumbnails share one rounded frame;
+   the year heading carries the year, so rows show type and venue only. */
+.publication-year-heading {
+  margin: 0 0 6px;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 1.7rem;
+}
+
+.publication-year-group + .publication-year-group {
+  margin-top: 40px;
+}
+
+.publication-grid {
+  gap: 0;
+  margin-top: 12px;
+}
+
+.publication-grid .publication-card,
+.publication-grid .publication-card.alive-card.alive-card:hover,
+.publication-grid .publication-card.alive-card.alive-card:has(:focus-visible) {
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 28px;
+  position: relative;
+  padding: 26px 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  transform: none;
+  overflow: visible;
+}
+
+/* Hairlines between papers: very faint, fading out at both ends. */
+.publication-grid .publication-card + .publication-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.07) 18%, rgba(255, 255, 255, 0.07) 82%, rgba(255, 255, 255, 0));
+  pointer-events: none;
+}
+
+.publication-grid .publication-thumbnail {
+  width: 100%;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Hover treats the whole paper as one piece: the row lifts slightly and a soft
+   sheet of light appears behind it, thumbnail and text together. */
+.publication-grid .publication-card {
+  isolation: isolate;
+  transition: transform 420ms var(--ease-pen);
+}
+
+.publication-grid .publication-card::after {
+  content: "";
+  position: absolute;
+  inset: 8px -18px;
+  z-index: -1;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  opacity: 0;
+  transition: opacity 320ms ease;
+  pointer-events: none;
+}
+
+.publication-grid .publication-card.alive-card.alive-card:hover,
+.publication-grid .publication-card.alive-card.alive-card:has(:focus-visible) {
+  transform: translateY(-2px);
+}
+
+.publication-grid .publication-card:hover::after,
+.publication-grid .publication-card:has(:focus-visible)::after {
+  opacity: 1;
+}
+
+.publication-grid .publication-card-copy {
+  gap: 24px;
+  padding: 0;
+  background: none;
+}
+
+.publication-grid .publication-card-meta {
+  gap: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.publication-grid .publication-card :is(h3, h4) {
+  margin: 8px 0 6px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.12rem;
+  line-height: 1.4;
+  transition: color 240ms ease;
+}
+
+.publication-grid .publication-card:hover :is(h3, h4) {
+  color: #ffffff;
+}
+
+.publication-grid .publication-card-authors {
+  font-size: 0.86rem;
+}
+
+/* Resource icons: quiet until you reach for them. */
+.publication-grid .publication-resource-link:not(.is-pending) {
+  border-color: rgba(255, 255, 255, 0.24);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.publication-grid .publication-resource-link:not(.is-pending):hover,
+.publication-grid .publication-resource-link:not(.is-pending):focus-visible {
+  border-color: var(--sun);
+  color: var(--sun);
+}
+
+@media (max-width: 720px) {
+  .publication-grid .publication-card,
+  .publication-grid .publication-card.alive-card.alive-card:hover {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .publication-grid .publication-card-copy {
+    flex-wrap: wrap;
+  }
+}
+
 /* ---------- Respect people who prefer less motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
@@ -890,6 +1338,7 @@ a {
   .person-portrait::before,
   .join-hero-figure img,
   .header-heart-breath,
+  .header-heart-hop,
   .alive-peek-body {
     animation: none !important;
   }
@@ -910,7 +1359,7 @@ a {
   }
 
   .alive-card.alive-card:hover,
-  .alive-card.alive-card:focus-within,
+  .alive-card.alive-card:has(:focus-visible),
   body:not(.phd-dialog-open) .join-card.alive-card:hover {
     transform: none;
   }
@@ -932,7 +1381,7 @@ a {
     transition: none;
   }
 
-  .news-archive-link .news-archive-label {
+  .news-archive-label::after {
     animation: none !important;
   }
 

@@ -39,7 +39,7 @@
 
       <main class="people-main">
         <section class="people-hero">
-          <h1>Who makes the collective</h1>
+          <h1 data-underline="Who">Who makes the collective</h1>
           <p class="people-intro">
             A growing interdisciplinary community exploring how data can
             become
@@ -49,7 +49,8 @@
           </p>
         </section>
 
-        <section class="people-directory" aria-label="People directory">
+        <h2 class="people-group-heading" id="lab-members-heading">Lab Members</h2>
+        <section class="people-directory" aria-labelledby="lab-members-heading">
           <article class="person-tile person-tile-bio-right">
             <a
               class="person-portrait person-portrait-keke person-portrait-swap"
@@ -357,6 +358,11 @@
             </div>
           </article>
 
+        </section>
+
+        <div class="people-group people-group-collaborators">
+          <h2 class="people-group-heading" id="collaborators-heading">Collaborators</h2>
+          <section class="people-directory people-directory-collaborators" aria-labelledby="collaborators-heading">
           <article class="person-tile person-tile-bio-right">
             <a
               class="person-portrait person-portrait-arran"
@@ -397,8 +403,8 @@
               </div>
             </div>
           </article>
-
-        </section>
+          </section>
+        </div>
       </main>
     </div>
 

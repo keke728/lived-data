@@ -342,24 +342,50 @@
   /* ---------- Hand-drawn squiggle under interior page titles ---------- */
   document.querySelectorAll("main h1").forEach((heading) => {
     if (heading.closest(".hero")) return;
+    /* A few hand-drawn variations; each page load picks one and draws it at its own pace,
+       so the stroke never looks stamped out. */
+    const strokes = [
+      "M3 8 C 18 1, 26 13, 42 7 S 66 1, 80 7 S 106 13, 129 5",
+      "M3 7 C 14 2, 24 11, 38 7 S 60 3, 74 8 S 100 11, 129 6",
+      "M3 9 C 20 3, 30 12, 46 7 S 70 2, 86 7 S 112 10, 129 4",
+      "M3 6 C 16 11, 28 2, 44 7 S 64 11, 82 6 S 108 3, 129 8",
+      "M3 8 C 12 4, 22 10, 34 7 S 54 2, 70 7 S 96 12, 112 7 S 124 5, 129 6",
+    ];
     const squiggle = svgEl("svg", { class: "alive-squiggle", viewBox: "0 0 132 14", "aria-hidden": "true" });
-    squiggle.appendChild(svgEl("path", { d: "M3 8 C 18 1, 26 13, 42 7 S 66 1, 80 7 S 106 13, 129 5" }));
-    const align = getComputedStyle(heading).textAlign;
-    if (align === "left" || align === "start") squiggle.style.marginLeft = "2px";
-    heading.insertAdjacentElement("afterend", squiggle);
+    const path = svgEl("path", { d: strokes[Math.floor(Math.random() * strokes.length)] });
+    squiggle.appendChild(path);
+    squiggle.style.width = `${Math.round(rand(118, 142))}px`;
+    squiggle.style.rotate = `${rand(-1.6, 1.6).toFixed(2)}deg`;
+    /* A title can ask for its line under one word: <h1 data-underline="word">. */
+    const word = heading.dataset.underline;
+    const textNode = word && [...heading.childNodes].find((node) => node.nodeType === 3 && node.textContent.includes(word));
+    if (textNode) {
+      const at = textNode.textContent.indexOf(word);
+      const after = textNode.splitText(at);
+      after.splitText(word.length);
+      const mark = document.createElement("span");
+      mark.className = "alive-underline-word";
+      after.replaceWith(mark);
+      mark.append(after, squiggle);
+      squiggle.style.width = "100%";
+      squiggle.setAttribute("preserveAspectRatio", "none");
+      squiggle.style.rotate = `${rand(-1.2, 1.2).toFixed(2)}deg`;
+    } else {
+      const align = getComputedStyle(heading).textAlign;
+      if (align === "left" || align === "start") squiggle.style.marginLeft = "2px";
+      heading.insertAdjacentElement("afterend", squiggle);
+    }
+    if (!reduceMotion) {
+      const length = Math.ceil(path.getTotalLength()) + 2;
+      path.style.strokeDasharray = length;
+      path.style.strokeDashoffset = length;
+    }
   });
 
   /* ---------- Cards respond like paper: a gentle lift (styles in alive.css) ---------- */
   const setupCards = (root = document) => {
     root.querySelectorAll(".research-theme-card, .publication-card, .join-card, .news-item").forEach((card) => {
       card.classList.add("alive-card");
-      /* A pen stroke under the card's title that draws itself on hover. */
-      const title = card.querySelector("h2, h3, h4");
-      if (!title || title.querySelector(".card-squiggle")) return;
-      const squiggle = svgEl("svg", { class: "card-squiggle", viewBox: "0 0 96 10", "aria-hidden": "true" });
-      squiggle.appendChild(svgEl("path", { d: "M2 6 C 12 1.5, 20 9.5, 32 5 S 52 1.5, 64 5.5 S 84 9, 94 4" }));
-      if (getComputedStyle(title).textAlign === "center") squiggle.classList.add("is-centered");
-      title.appendChild(squiggle);
     });
   };
   setupCards();

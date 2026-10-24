@@ -110,7 +110,7 @@
       <div class="${thumbnailClass}"${imageStyle}>${work.thumbnail ? `<img src="${work.thumbnail}" alt="" />` : ""}</div>
       <div class="publication-card-copy">
         <div class="publication-card-primary">
-          <p class="publication-card-meta"><span class="publication-type-tag">${work.type}</span><span>${work.venue} · ${work.year}</span>${award}</p>
+          <p class="publication-card-meta"><span class="publication-type-tag">${work.type}</span><span>${featured ? `${work.venue} · ${work.year}` : work.venue}</span>${award}</p>
           <${featured ? "h3" : "h4"}>${title}</${featured ? "h3" : "h4"}>
           <p class="publication-card-summary">${work.summary}</p>
           <p class="publication-card-authors">${formatAuthors(work, featured)}</p>
