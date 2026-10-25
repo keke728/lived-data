@@ -379,8 +379,153 @@
       const length = Math.ceil(path.getTotalLength()) + 2;
       path.style.strokeDasharray = length;
       path.style.strokeDashoffset = length;
+      /* Same pen speed for every title: longer lines take proportionally longer. */
+      const drawn = squiggle.getBoundingClientRect().width || 130;
+      const seconds = Math.min(1.8, Math.max(0.75, drawn / 340));
+      path.style.animationDuration = `${seconds.toFixed(2)}s`;
     }
   });
+
+  /* ---------- Landing phrase: its underline is drawn like a pen stroke ----------
+     One hand-drawn stroke per line of the phrase, drawn left to right at the same pen
+     speed as the titles, flowing from the first line into the next. Static afterwards. */
+  const phrase = document.querySelector(".hero-text .wave-underline");
+  const phraseBox = phrase && phrase.closest(".hero-copy");
+  if (phrase && phraseBox) {
+    const wavePath = (width) => {
+      let d = "M0 4.6";
+      for (let x = 0; x < width; x += 64) {
+        d += ` C ${x + 7} 1.6, ${x + 13} 7.8, ${x + 23} 4.4 S ${x + 39} 1.6, ${x + 47} 4.8 S ${x + 58} 6.9, ${x + 64} 4.6`;
+      }
+      return d;
+    };
+    /* The pen loops: draw the phrase line by line at one constant speed, rest, then the
+       stroke lifts away from the start in the same direction, pause, and draw again. */
+    const SPEED = 190; /* pixels per second */
+    const HOLD = 2600; /* rest with the line fully drawn */
+    const GAP = 700; /* empty pause before redrawing */
+    let lines = [];
+    let loopId = 0;
+
+    const build = () => {
+      phraseBox.querySelectorAll(".pen-line").forEach((line) => line.remove());
+      const origin = phraseBox.getBoundingClientRect();
+      lines = [...phrase.getClientRects()]
+        .filter((rect) => rect.width > 4)
+        .map((rect) => {
+          const svg = svgEl("svg", { class: "pen-line", "aria-hidden": "true", viewBox: `0 0 ${rect.width} 9`, preserveAspectRatio: "none" });
+          svg.style.left = `${rect.left - origin.left}px`;
+          svg.style.top = `${rect.bottom - origin.top - 6}px`;
+          svg.style.width = `${rect.width}px`;
+          const path = svgEl("path", { d: wavePath(rect.width) });
+          svg.appendChild(path);
+          phraseBox.appendChild(svg);
+          const length = Math.ceil(path.getTotalLength()) + 2;
+          path.style.strokeDasharray = `${length} ${length}`;
+          return { path, length, ms: (rect.width / SPEED) * 1000 };
+        });
+    };
+
+    /* Move every line's dash from one offset to another, one line after another. */
+    const pass = async (id, from, to) => {
+      for (const line of lines) {
+        if (id !== loopId) return false;
+        const animation = line.path.animate(
+          [{ strokeDashoffset: from(line) }, { strokeDashoffset: to(line) }],
+          { duration: line.ms, easing: "linear", fill: "forwards" }
+        );
+        await animation.finished.catch(() => {});
+      }
+      return id === loopId;
+    };
+
+    const loop = async () => {
+      const id = ++loopId;
+      lines.forEach((line) => {
+        line.path.getAnimations().forEach((animation) => animation.cancel());
+        line.path.style.strokeDashoffset = line.length;
+      });
+      await wait(350);
+      while (id === loopId) {
+        if (document.hidden) {
+          await wait(500);
+          continue;
+        }
+        if (!(await pass(id, (l) => l.length, () => 0))) return;
+        await wait(HOLD);
+        if (!(await pass(id, () => 0, (l) => -l.length))) return;
+        await wait(GAP);
+      }
+    };
+
+    phrase.classList.add("is-pen");
+    const start = () => {
+      build();
+      if (reduceMotion) {
+        lines.forEach((line) => (line.path.style.strokeDashoffset = 0));
+      } else {
+        loop();
+      }
+    };
+    /* Measure only after the fonts are in and the paragraph has finished sliding in. */
+    const revealing = phrase.closest(".hero-reveal");
+    const settled = revealing && revealing.getAnimations ? revealing.getAnimations().map((animation) => animation.finished) : [];
+    Promise.all([document.fonts ? document.fonts.ready : null, ...settled])
+      .catch(() => {})
+      .then(start);
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(start, 200);
+    });
+  }
+
+  /* News archive: catalogue numbers, counting up from the oldest entry. */
+  const archiveItems = document.querySelectorAll(".news-archive-page .news-item");
+  archiveItems.forEach((item, index) => {
+    const meta = item.querySelector(".news-meta");
+    if (!meta || meta.querySelector(".news-entry-no")) return;
+    const number = document.createElement("span");
+    number.className = "news-entry-no";
+    number.textContent = `No. ${String(archiveItems.length - index).padStart(3, "0")}`;
+    meta.prepend(number);
+  });
+
+  /* News archive: a simple time filter (All / each year), built from the months listed. */
+  const archivePeriods = [...document.querySelectorAll(".news-archive-page .news-archive-period")];
+  const archiveHeading = document.querySelector(".news-archive-page .news-heading");
+  if (archivePeriods.length && archiveHeading) {
+    const yearOf = (period) => (period.querySelector(".news-archive-date")?.textContent.match(/\d{4}/) || [""])[0];
+    const years = [...new Set(archivePeriods.map(yearOf).filter(Boolean))];
+    if (years.length > 1) {
+      const bar = document.createElement("div");
+      bar.className = "archive-filter";
+      bar.setAttribute("role", "group");
+      bar.setAttribute("aria-label", "Filter updates by year");
+      ["All", ...years].forEach((label) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.setAttribute("aria-pressed", String(label === "All"));
+        button.addEventListener("click", () => {
+          bar.querySelectorAll("button").forEach((other) => other.setAttribute("aria-pressed", String(other === button)));
+          archivePeriods.forEach((period) => {
+            period.hidden = label !== "All" && yearOf(period) !== label;
+          });
+        });
+        bar.appendChild(button);
+      });
+      archiveHeading.insertAdjacentElement("afterend", bar);
+    }
+  }
+
+  /* News archive: Escape closes the opened section, like the × button. */
+  const archiveClose = document.querySelector(".news-archive-close");
+  if (archiveClose) {
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !event.defaultPrevented) window.location.href = archiveClose.href;
+    });
+  }
 
   /* ---------- Cards respond like paper: a gentle lift (styles in alive.css) ---------- */
   const setupCards = (root = document) => {

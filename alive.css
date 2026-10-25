@@ -247,7 +247,7 @@ main h1.has-twinkles.is-centered {
   stroke-linecap: round;
   stroke-dasharray: 220;
   stroke-dashoffset: 220;
-  animation: alive-draw 950ms 300ms var(--ease-pen) forwards;
+  animation: alive-draw 1s 300ms cubic-bezier(0.42, 0, 0.58, 1) forwards;
 }
 
 /* When the line sits under a single word in the title. */
@@ -1014,8 +1014,20 @@ a {
 
 /* The News archive opens with its title; the star divider belongs above Home's news only. */
 .news-archive-page .news-shell::before,
-.news-archive-page .news-shell::after {
-  content: none;
+.news-archive-page .news-section::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: calc(44px + 34px - 14px);
+  left: 42%;
+  right: calc(clamp(20px, 4vw, 48px) + 24px);
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, rgba(244, 239, 230, 0.09), rgba(244, 239, 230, 0.03));
+  rotate: -0.6deg;
+  pointer-events: none;
 }
 
 .news-archive-page .news-shell {
@@ -1322,6 +1334,304 @@ a {
 
   .publication-grid .publication-card-copy {
     flex-wrap: wrap;
+  }
+}
+
+/* ---------- News items hover as one piece, like publications ----------
+   The whole row (date, thumbnail, text) lifts slightly together; no highlight. */
+.news-item {
+  position: relative;
+  isolation: isolate;
+  transition: transform 420ms var(--ease-pen);
+}
+
+.news-item.alive-card.alive-card:hover,
+.news-item.alive-card.alive-card:has(:focus-visible) {
+  transform: translateY(-2px);
+}
+
+.news-item .news-media,
+.news-item .news-media:hover,
+.news-item:hover .news-media {
+  transform: none;
+}
+
+/* Landing phrase: the background underline is replaced by drawn pen lines (alive.js). */
+.hero-copy {
+  position: relative;
+}
+
+.hero-text .wave-underline.is-pen {
+  background: none;
+}
+
+.pen-line {
+  position: absolute;
+  height: 9px;
+  pointer-events: none;
+}
+
+.pen-line path {
+  fill: none;
+  stroke: var(--sun);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---------- News archive: reads as an opened section with a close button ---------- */
+.news-archive-page .news-heading {
+  position: relative;
+  padding-right: 56px;
+  margin-bottom: 36px;
+}
+
+.news-archive-close {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1.45rem;
+  line-height: 1;
+  text-decoration: none;
+  transition: border-color 240ms ease, color 240ms ease, rotate 420ms var(--ease-pen);
+}
+
+.news-archive-close:hover,
+.news-archive-close:focus-visible {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  rotate: 90deg;
+  outline: none;
+}
+
+.news-archive-close:focus-visible {
+  box-shadow: 0 0 0 2px var(--sun);
+}
+
+#news {
+  scroll-margin-top: 110px;
+}
+
+/* ---------- News archive as an opened sheet with a timeline ----------
+   The archive sits on its own raised sheet of paper (rounded, faint edge, soft shadow)
+   that slides up when opened, and its months hang off a thin vertical timeline. */
+.news-archive-page .news-section {
+  max-width: 1060px;
+}
+
+.news-archive-page .news-shell {
+  padding: clamp(28px, 4.5vw, 52px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012)),
+    var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: auto, 512px 512px;
+  box-shadow: 0 40px 90px -40px rgba(0, 0, 0, 0.85);
+  animation: archive-sheet-in 640ms var(--ease-pen) both;
+}
+
+@keyframes archive-sheet-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+
+.news-archive-page .news-heading {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.news-archive-close {
+  top: -4px;
+}
+
+/* Timeline: a thin rail with a small ochre dot at each month. */
+.news-archive-page .news-archive-period {
+  position: relative;
+  padding-left: 30px;
+}
+
+.news-archive-page .news-archive-period::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 14px;
+  bottom: -30px;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.06));
+}
+
+.news-archive-page .news-archive-period:last-of-type::before {
+  bottom: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+}
+
+.news-archive-page .news-archive-date {
+  position: relative;
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+}
+
+.news-archive-page .news-archive-date::before {
+  content: "";
+  position: absolute;
+  left: -30px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: var(--sun);
+  box-shadow: 0 0 0 4px rgba(19, 17, 16, 0.9);
+}
+
+/* Archive feel: a file folder with a labeled tab, typewriter catalogue details,
+   and index-card rules between entries. Photos stay in full color. */
+.news-archive-page .news-shell {
+  position: relative;
+  margin-top: 34px;
+  border-top-left-radius: 0;
+}
+
+.news-archive-page .news-shell::before {
+  content: "File · Sep 2025 – Aug 2026";
+  position: absolute;
+  top: -33px;
+  left: -1px;
+  right: auto;
+  width: auto;
+  height: 34px;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  padding-right: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 0;
+  border-radius: 10px 18px 0 0;
+  clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.035)),
+    var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: auto, 512px 512px;
+  color: rgba(255, 255, 255, 0.62);
+  font-family: "Courier Prime", "Courier New", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.news-archive-page .news-kicker,
+.news-archive-page .news-archive-date,
+.news-archive-page .news-type,
+.news-archive-page .news-entry-no {
+  font-family: "Courier Prime", "Courier New", monospace;
+}
+
+.news-archive-page .news-kicker {
+  letter-spacing: 0.14em;
+}
+
+.news-archive-page .news-type {
+  color: rgba(255, 255, 255, 0.68);
+  letter-spacing: 0.08em;
+}
+
+.news-entry-no {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+}
+
+/* Index-card rules between entries within a month. */
+.news-archive-page .news-archive-period .news-item + .news-item {
+  margin-top: 6px;
+  padding-top: 16px;
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 50%, transparent 50%);
+  background-size: 8px 1px;
+  background-repeat: repeat-x;
+  background-position: 0 0;
+}
+
+/* Folder: a document peeks out behind the front cover, so it reads as a filled folder. */
+.news-archive-page .news-section {
+  position: relative;
+}
+
+.news-archive-page .news-shell::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -14px;
+  left: 38%;
+  right: 22px;
+  height: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg, rgba(244, 239, 230, 0.09), rgba(244, 239, 230, 0.03));
+  rotate: -0.6deg;
+}
+
+.news-archive-page .news-shell {
+  z-index: 1;
+}
+
+/* Time filter: a simple row of quiet pills under the title. */
+.archive-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -12px 0 32px;
+}
+
+.archive-filter button {
+  min-height: 32px;
+  padding: 4px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  font: inherit;
+  font-family: "Courier Prime", "Courier New", monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 220ms ease, color 220ms ease, background-color 220ms ease;
+}
+
+.archive-filter button:hover,
+.archive-filter button:focus-visible {
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  outline: none;
+}
+
+.archive-filter button:focus-visible {
+  box-shadow: 0 0 0 2px var(--sun);
+}
+
+.archive-filter button[aria-pressed="true"] {
+  border-color: var(--sun);
+  color: var(--sun);
+}
+
+.news-archive-period[hidden] {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .news-archive-page .news-shell {
+    border-radius: 16px;
   }
 }
 
