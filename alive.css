@@ -1347,7 +1347,7 @@ a {
 
 .news-item.alive-card.alive-card:hover,
 .news-item.alive-card.alive-card:has(:focus-visible) {
-  transform: translateY(-2px);
+  transform: none;
 }
 
 .news-item .news-media,
@@ -1476,8 +1476,6 @@ a {
 .news-archive-page .news-archive-date {
   position: relative;
   margin-bottom: 10px;
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
 }
 
 .news-archive-page .news-archive-date::before {
@@ -1528,21 +1526,6 @@ a {
   text-transform: uppercase;
 }
 
-.news-archive-page .news-kicker,
-.news-archive-page .news-archive-date,
-.news-archive-page .news-type,
-.news-archive-page .news-entry-no {
-  font-family: "Courier Prime", "Courier New", monospace;
-}
-
-.news-archive-page .news-kicker {
-  letter-spacing: 0.14em;
-}
-
-.news-archive-page .news-type {
-  color: rgba(255, 255, 255, 0.68);
-  letter-spacing: 0.08em;
-}
 
 .news-entry-no {
   display: block;
@@ -1602,9 +1585,8 @@ a {
   background: transparent;
   color: rgba(255, 255, 255, 0.72);
   font: inherit;
-  font-family: "Courier Prime", "Courier New", monospace;
-  font-size: 0.82rem;
-  letter-spacing: 0.06em;
+  font-size: 0.86rem;
+  letter-spacing: 0.04em;
   cursor: pointer;
   transition: border-color 220ms ease, color 220ms ease, background-color 220ms ease;
 }
