@@ -2991,6 +2991,12 @@ body.phd-dialog-open { overflow: hidden; }
   border-radius: 57% 43% 49% 51% / 43% 57% 43% 57%;
 }
 
+.person-tile:nth-child(8) .person-portrait::before {
+  --contour-rotate: 3deg;
+  inset: -7px -6px 8px 6px;
+  border-radius: 51% 49% 56% 44% / 45% 54% 46% 55%;
+}
+
 .person-portrait:hover::after,
 .person-portrait:focus-visible::after {
   opacity: 0.82;
@@ -3058,6 +3064,16 @@ body.phd-dialog-open { overflow: hidden; }
   transform: scale(1.12);
 }
 
+.person-portrait-sneha .person-portrait-image-base {
+  object-position: center 22%;
+  transform: scale(1.1);
+}
+
+.person-portrait-sneha .person-portrait-image-hover {
+  object-position: 58% 20%;
+  transform: scale(1.14);
+}
+
 .person-portrait-maggie .person-portrait-image-base {
   object-position: center 58%;
   transform: scale(1.0);
@@ -3066,11 +3082,6 @@ body.phd-dialog-open { overflow: hidden; }
 .person-portrait-maggie .person-portrait-image-hover {
   object-position: 44% 36%;
   transform: scale(1.08);
-}
-
-.person-portrait-arran .person-portrait-image-base {
-  object-position: center 18%;
-  transform: scale(1.06);
 }
 
 /* One crop and silhouette keeps the roster cohesive despite varied source photos. */
