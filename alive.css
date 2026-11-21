@@ -1863,6 +1863,10 @@ html:not(#ds) .news-media img:is([src*="cognitive-accessibility"], [src*="charti
   background: #000000;
 }
 
+html:not(#ds) .news-media img[src*="vis-2026-poster-team"] {
+  object-position: 50% 30%;
+}
+
 html:not(#ds) .news-media img[src*="isabella-surc"] {
   object-position: 20% 80%;
 }
@@ -1943,6 +1947,13 @@ html:not(#ds) .news-item:nth-of-type(3n + 2) .news-media::before {
 
 html:not(#ds) .news-item:nth-of-type(3n + 3) .news-media {
   --photo-tilt: -0.8deg;
+}
+
+/* Maggie's photo is taped at the top-right corner. */
+html:not(#ds) .news-media:has(img[src*="maggie-xu"])::before {
+  left: auto;
+  right: -12px;
+  --tape-tilt: 38deg;
 }
 
 /* Tape colors: red, yellow and grey, set in a fixed order by alive.js. */
