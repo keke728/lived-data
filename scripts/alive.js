@@ -529,7 +529,7 @@
 
   /* ---------- Cards respond like paper: a gentle lift (styles in alive.css) ---------- */
   const setupCards = (root = document) => {
-    root.querySelectorAll(".research-theme-card, .publication-card, .join-card, .news-item").forEach((card) => {
+    root.querySelectorAll(".research-theme-card, .publication-card, .news-item").forEach((card) => {
       card.classList.add("alive-card");
     });
   };
@@ -549,7 +549,7 @@
       ".publication-collection .publication-card",
       ".publication-feature",
       ".news-archive-main .news-item",
-      ".join-card",
+      ".join-note",
     ].join(",")
   );
 
@@ -579,6 +579,14 @@
       riseObserver.observe(target);
     });
   }
+
+  /* ---------- News thumbnails: washi tape in red, yellow and blue ----------
+     A fixed order down the whole list (not random, and the same on every visit),
+     so neighbouring photos never share a color, even across month groups. */
+  const tapeOrder = ["red", "blue", "yellow", "red", "yellow", "blue"];
+  document.querySelectorAll(".news-media:not(.news-media-logo)").forEach((media, index) => {
+    media.dataset.tape = tapeOrder[index % tapeOrder.length];
+  });
 
   /* ---------- A quiet footer on every page ---------- */
   const shell = document.querySelector(".page-shell");
@@ -626,7 +634,8 @@
   let wasPeeking = false;
   const updatePeek = () => {
     const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-    const nearBottom = scrollable > 160 && window.scrollY > scrollable - 140;
+    /* Pages that barely scroll still get the heart, waving from the bottom corner. */
+    const nearBottom = scrollable <= 160 || window.scrollY > scrollable - 140;
     peek.classList.toggle("is-peeking", nearBottom);
     if (nearBottom && !wasPeeking && !reduceMotion) wait(650).then(() => peekHeart.blink());
     wasPeeking = nearBottom;

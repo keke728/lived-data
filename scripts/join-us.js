@@ -1,3 +1,27 @@
+/* Get in touch: the hand waves once when the section comes into view, and again on hover. */
+(() => {
+  const contact = document.querySelector(".join-contact");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!contact || reduceMotion) return;
+
+  const wave = () => {
+    contact.classList.remove("is-waving");
+    void contact.offsetWidth; /* restart the animation */
+    contact.classList.add("is-waving");
+  };
+  contact.querySelector(".join-wave-hand").addEventListener("animationend", () => contact.classList.remove("is-waving"));
+  contact.addEventListener("pointerenter", wave);
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      window.setTimeout(wave, 300);
+      observer.disconnect();
+    }, { threshold: 0.6 });
+    observer.observe(contact);
+  }
+})();
+
 /* Prospective PhD information on the Join Us page. */
 (() => {
   const trigger = document.querySelector(".join-phd-trigger");

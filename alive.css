@@ -328,8 +328,8 @@ main h1.has-twinkles.is-centered {
 
 /* The bordered cards (not news rows) lift 2px with a soft shadow, and brighten a touch:
    a slightly lighter neutral edge and a faint lift in tone across the paper. No color, no glow. */
-:is(.research-theme-card, .publication-card, .join-card).alive-card.alive-card:hover,
-:is(.research-theme-card, .publication-card, .join-card).alive-card.alive-card:has(:focus-visible) {
+:is(.research-theme-card, .publication-card).alive-card.alive-card:hover,
+:is(.research-theme-card, .publication-card).alive-card.alive-card:has(:focus-visible) {
   border-color: rgba(255, 255, 255, 0.5);
   box-shadow:
     inset 0 0 0 100vmax rgba(255, 255, 255, 0.022),
@@ -355,23 +355,6 @@ main h1.has-twinkles.is-centered {
 
 .alive-card .publication-title-link:hover,
 .alive-card .publication-title-link:focus-visible {
-  color: inherit;
-}
-
-/* Join Us cards: no yellow border, text tint or tilt on hover (the pen stroke is the hover). */
-body:not(.phd-dialog-open) .join-card.alive-card:hover {
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow:
-    inset 0 0 0 100vmax rgba(255, 255, 255, 0.022),
-    0 10px 22px -12px rgba(0, 0, 0, 0.6);
-  transform: translateY(-2px);
-}
-
-body:not(.phd-dialog-open) .join-card.alive-card:hover :is(.join-card-kicker, h2) {
-  color: #ffffff;
-}
-
-body:not(.phd-dialog-open) .join-card.alive-card:hover p {
   color: inherit;
 }
 
@@ -418,8 +401,7 @@ body:not(.phd-dialog-open) .join-card.alive-card:hover p {
   transition: stroke-dashoffset 720ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.research-theme-card.alive-card,
-.join-card.alive-card {
+.research-theme-card.alive-card {
   --alive-card-line: rgba(150, 150, 150, 0.34);
 }
 
@@ -1034,11 +1016,6 @@ a {
   padding-top: 0;
 }
 
-/* Join Us: the Students card reads like the other two cards (no bold paragraph). */
-.join-card p strong {
-  font-weight: inherit;
-}
-
 /* People: less empty space below the last row. */
 .people-main {
   padding-bottom: 120px;
@@ -1651,8 +1628,7 @@ a {
   }
 
   .alive-card.alive-card:hover,
-  .alive-card.alive-card:has(:focus-visible),
-  body:not(.phd-dialog-open) .join-card.alive-card:hover {
+  .alive-card.alive-card:has(:focus-visible) {
     transform: none;
   }
 
@@ -1691,5 +1667,408 @@ a {
 
   .alive-peek {
     transition: none;
+  }
+}
+
+/* ==========================================================================
+   Design system: one interaction language for the whole site.
+   Loaded last; the html:not(#ds) prefix gives these rules priority over the
+   page-specific rules above, so every page shares the same tokens, buttons,
+   controls, card hover and focus ring. Edit here to change them everywhere.
+   ========================================================================== */
+
+:root {
+  --gold: #f1bc42;              /* main actions, focus ring, pen strokes */
+  --red: #e21833;               /* text-link hover, kickers */
+  --ink-dark: #131110;          /* text on filled buttons */
+  --line: rgba(150, 150, 150, 0.34);      /* card edges */
+  --line-hover: rgba(255, 255, 255, 0.5); /* card edges on hover */
+  --control-line: rgba(255, 255, 255, 0.34);
+  --control-text: rgba(255, 255, 255, 0.78);
+  --t-quick: 200ms;             /* color changes */
+  --t-move: 480ms;              /* movement */
+  --lift: -4px;                 /* card hover lift */
+}
+
+/* ---------- Buttons: pill, one size and weight ----------
+   Every button: white outline and white text; on hover the outline and text turn gold and the button lifts 2px. */
+html:not(#ds) :is(.button, .join-apply-button, .join-note-link, .join-note .join-phd-trigger, .join-phd-program) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 26px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: none;
+  transform: none;
+  transition:
+    background-color var(--t-quick) ease,
+    border-color var(--t-quick) ease,
+    color var(--t-quick) ease,
+    transform var(--t-quick) var(--ease-out, ease);
+}
+
+html:not(#ds) :is(.button, .join-apply-button, .join-note-link, .join-note .join-phd-trigger, .join-phd-program):is(:hover, :focus-visible) {
+  border-color: var(--gold);
+  background: transparent;
+  color: var(--gold);
+  box-shadow: none;
+  transform: translateY(-2px);
+}
+
+/* Inside a Join Us note, a button's hover takes the note's color (red on Students). */
+html:not(#ds) .join-note .join-phd-trigger:not(#ds-note):is(:hover, :focus-visible) {
+  border-color: var(--note-ink);
+  color: var(--note-ink);
+}
+
+/* ---------- Prospective PhD popup: a larger copy of the red Students note ----------
+   Same dark paper, grain and red wash, the torn red band along the top, square
+   corners and a slight tilt; stars, underline and the button's hover in red. */
+html:not(#ds) .join-phd-dialog {
+  --note-color: rgba(226, 24, 51, 0.8);
+  --note-ink: #eb434a;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 3px;
+  background:
+    var(--tex-grain),
+    linear-gradient(180deg, rgba(226, 24, 51, 0.1) 0, transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: 160px 160px, auto, auto, 512px 512px;
+  rotate: -0.6deg;
+}
+
+html:not(#ds) .join-phd-dialog::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 20px;
+  background: var(--tex-grain), var(--tex-fibers), var(--note-color);
+  background-size: 160px 160px, 240px 60px, auto;
+  clip-path: var(--tex-tear);
+  pointer-events: none;
+}
+
+html:not(#ds) .join-phd-dialog .join-phd-content {
+  padding-top: clamp(40px, 5vw, 48px);
+}
+
+@media (max-width: 600px) {
+  html:not(#ds) .join-phd-dialog {
+    rotate: none;
+  }
+}
+
+html:not(#ds) :is(.join-phd-eyebrow, .join-phd-directions li)::before {
+  background: var(--note-ink);
+}
+
+html:not(#ds) .join-phd-dialog .wave-underline {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='9' viewBox='0 0 64 9'%3E%3Cpath d='M0 4.6 C 7 1.6, 13 7.8, 23 4.4 S 39 1.6, 47 4.8 S 58 6.9, 64 4.6' fill='none' stroke='%23eb434a' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+html:not(#ds) .join-phd-dialog .join-phd-program:not(#ds-note):is(:hover, :focus-visible) {
+  border-color: var(--note-ink);
+  color: var(--note-ink);
+}
+
+/* ---------- News & updates thumbnails: plain rectangles ----------
+   No boxed frame or outline: each image fills a plain rectangle with square
+   corners. Nothing moves on hover. */
+html:not(#ds) .news-media:not(.news-media-logo) {
+  width: 112px;
+  height: 76px;
+  min-height: 76px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+html:not(#ds) .news-media:not(.news-media-logo) img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  filter: saturate(0.85) contrast(1.04) brightness(0.94);
+}
+
+html:not(#ds) .news-media:not(.news-media-logo)::after {
+  inset: 0;
+  border-radius: 0;
+}
+
+html:not(#ds) .news-media.news-media-bulb {
+  background: transparent;
+}
+
+html:not(#ds) .news-media-bulb img {
+  background: #ffffff;
+  object-fit: contain;
+  padding: 8px;
+}
+
+html:not(#ds) .news-item .news-media:hover,
+html:not(#ds) .news-item .news-media:hover img {
+  transform: none;
+}
+
+/* Per-image framing so each subject sits balanced in its rectangle:
+   wide diagrams show whole (letterboxed on their own black), photos are
+   nudged so the person is centered, and the bulb fills more of its frame. */
+html:not(#ds) .news-media img:is([src*="cognitive-accessibility"], [src*="charting-the-immersive"]) {
+  object-fit: contain;
+  background: #000000;
+}
+
+html:not(#ds) .news-media img[src*="isabella-surc"] {
+  object-position: 20% 80%;
+}
+
+html:not(#ds) .news-media img[src*="maggie-xu"] {
+  object-position: 50% 35%;
+}
+
+html:not(#ds) .news-media img[src*="bringing-data-to-life"] {
+  object-fit: contain;
+  background: #000000;
+}
+
+html:not(#ds) .news-media-bulb img {
+  padding: 3px;
+}
+
+/* ---------- Thumbnails as photos taped into a memory book ----------
+   Each thumbnail is a small photo with a thin cream border, set at a relaxed
+   angle and held on by a short strip of striped washi tape (red, gold or grey,
+   alternating corners). Nothing moves on hover. */
+html:not(#ds) .news-item {
+  grid-template-columns: 140px 124px minmax(0, 1fr);
+}
+
+html:not(#ds) .news-media:not(.news-media-logo) {
+  --tape: repeating-linear-gradient(-45deg, rgba(226, 24, 51, 0.8) 0 4px, rgba(244, 239, 230, 0.75) 4px 8px);
+  --tape-tilt: -38deg;
+  box-sizing: border-box;
+  width: 112px;
+  height: 80px;
+  min-height: 80px;
+  margin-top: 4px;
+  padding: 4px;
+  overflow: visible;
+  border: 0;
+  border-radius: 1px;
+  background: #f4f1ea;
+  box-shadow: 0 6px 12px -8px rgba(0, 0, 0, 0.8);
+  rotate: var(--photo-tilt, -1.8deg);
+}
+
+html:not(#ds) .news-media:not(.news-media-logo) img {
+  filter: none;
+  border-radius: 0;
+}
+
+/* The washi tape strip over one top corner. */
+html:not(#ds) .news-media:not(.news-media-logo)::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -12px;
+  right: auto;
+  z-index: 2;
+  width: 38px;
+  height: 12px;
+  background: var(--tape);
+  rotate: var(--tape-tilt);
+  opacity: 0.92;
+  pointer-events: none;
+  clip-path: polygon(0 10%, 4% 0, 96% 6%, 100% 0, 98% 100%, 94% 88%, 3% 100%, 0 90%);
+}
+
+html:not(#ds) .news-media:not(.news-media-logo)::after {
+  display: none;
+}
+
+html:not(#ds) .news-item:nth-of-type(3n + 2) .news-media {
+  --photo-tilt: 1.6deg;
+}
+
+html:not(#ds) .news-item:nth-of-type(3n + 2) .news-media::before {
+  left: auto;
+  right: -12px;
+  --tape-tilt: 38deg;
+}
+
+html:not(#ds) .news-item:nth-of-type(3n + 3) .news-media {
+  --photo-tilt: -0.8deg;
+}
+
+/* Tape colors: red, yellow and blue, set in a fixed order by alive.js. */
+html:not(#ds) .news-media[data-tape="red"] { --tape: repeating-linear-gradient(-45deg, rgba(226, 24, 51, 0.8) 0 4px, rgba(244, 239, 230, 0.75) 4px 8px); }
+html:not(#ds) .news-media[data-tape="yellow"] { --tape: repeating-linear-gradient(-45deg, rgba(241, 188, 66, 0.8) 0 4px, rgba(244, 239, 230, 0.7) 4px 8px); }
+html:not(#ds) .news-media[data-tape="blue"] { --tape: repeating-linear-gradient(-45deg, rgba(143, 176, 224, 0.85) 0 4px, rgba(244, 239, 230, 0.75) 4px 8px); }
+
+html:not(#ds) .news-media.news-media-bulb {
+  background: #f4f1ea;
+}
+
+html:not(#ds) .news-media-bulb img {
+  background: #f4f1ea;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(#ds) .news-media:not(.news-media-logo) {
+    transition: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  html:not(#ds) .news-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Icon buttons: small outlined circles ---------- */
+html:not(#ds) :is(.publication-resource-link, .person-bio-trigger, .news-archive-close, .join-phd-close) {
+  border: 1px solid var(--control-line);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--control-text);
+  transform: none;
+  transition:
+    border-color var(--t-quick) ease,
+    color var(--t-quick) ease,
+    rotate var(--t-move) var(--ease-out, ease);
+}
+
+html:not(#ds) :is(.publication-resource-link:not(.is-pending), .person-bio-trigger, .news-archive-close, .join-phd-close):is(:hover, :focus-visible),
+html:not(#ds) .person-tile-copy.is-bio-open .person-bio-trigger {
+  border-color: #ffffff;
+  background: transparent;
+  color: #ffffff;
+  transform: none;
+}
+
+/* ---------- Controls (filters and toggles): outlined pills ---------- */
+html:not(#ds) :is(.archive-filter button, .publication-filter-trigger, .publication-filter-reset) {
+  border: 1px solid var(--control-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--control-text);
+  font-weight: 400;
+  -webkit-text-stroke: 0;
+  transition: border-color var(--t-quick) ease, color var(--t-quick) ease;
+}
+
+html:not(#ds) :is(.archive-filter button, .publication-filter-trigger, .publication-filter-reset):is(:hover, :focus-visible, [aria-pressed="true"], [aria-expanded="true"]),
+html:not(#ds) .publication-filter-control.is-open .publication-filter-trigger {
+  border-color: #ffffff;
+  color: #ffffff;
+  font-weight: 400;
+  -webkit-text-stroke: 0;
+}
+
+/* ---------- Inline text links: bold, dotted underline, red on hover ---------- */
+html:not(#ds) :is(.join-contact p a, .research-perspective-panel a, .news-paper-link):is(:hover, :focus-visible) {
+  color: var(--red);
+  text-decoration-color: currentColor;
+}
+
+/* ---------- Cards and sections: one gentle hover ----------
+   Research themes and Join Us sections lift a little; bordered cards also brighten
+   their edge. Publications don't move: a sheet of paper texture fades in behind them.
+   News & updates rows stay still. */
+
+html:not(#ds) body .publication-card.publication-card:is(:hover, :has(:focus-visible)) {
+  transform: none;
+  translate: none;
+}
+
+/* Publications: the soft sheet behind each paper now carries the paper grain. */
+html:not(#ds) .publication-grid .publication-card::after,
+html:not(#ds) .publication-card-featured::before {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.035)),
+    var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: auto, 512px 512px;
+}
+
+html:not(#ds) .publication-card-featured {
+  isolation: isolate;
+}
+
+html:not(#ds) .publication-card-featured::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+html:not(#ds) .publication-card-featured:is(:hover, :has(:focus-visible))::before {
+  opacity: 1;
+}
+html:not(#ds) :is(.research-theme-card, .join-note) {
+  transition:
+    translate var(--t-move) var(--ease-out, ease),
+    rotate var(--t-move) var(--ease-out, ease),
+    transform var(--t-move) var(--ease-out, ease),
+    border-color var(--t-quick) ease,
+    box-shadow var(--t-move) ease;
+}
+
+html:not(#ds) body .news-item.news-item:is(:hover, :has(:focus-visible)) {
+  transform: none;
+  translate: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html:not(#ds) body:not(.phd-dialog-open) :is(.research-theme-card, .join-note):is(:hover, :has(:focus-visible)) {
+    transform: none;
+    translate: 0 var(--lift);
+  }
+
+  html:not(#ds) body:not(.phd-dialog-open) :is(.research-theme-card, .publication-card, .join-note):is(:hover, :has(:focus-visible)) {
+    border-color: var(--line-hover);
+  }
+
+  /* Join Us notes take their own color on the edge (red, grey, gold). */
+  html:not(#ds) body:not(.phd-dialog-open) .join-note:is(:hover, :has(:focus-visible)) {
+    border-color: var(--note-ink);
+  }
+}
+
+/* ---------- Focus: one gold ring everywhere ---------- */
+html:not(#ds) :is(a, button, summary, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+/* ---------- Page titles: one size on every interior page ---------- */
+html:not(#ds) main h1:not(.hero-reveal) {
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: clamp(1.9rem, 3.2vw, 2.8rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(#ds) :is(.button, .join-apply-button, .join-note-link, .join-note .join-phd-trigger, .join-phd-program):is(:hover, :focus-visible) {
+    transform: none;
+  }
+
+  html:not(#ds) body :is(.research-theme-card, .join-note):is(:hover, :has(:focus-visible)) {
+    transform: none;
+    translate: none;
   }
 }

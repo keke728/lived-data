@@ -4,6 +4,10 @@
    -------------------------------------------------------------------------- */
 
 :root {
+  /* Note textures, shared by the Join Us notes and the PhD popup. */
+  --tex-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .3 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --tex-fibers: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='60'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.02 .6' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .12 -.03'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  --tex-tear: polygon(0 0, 100% 0, 100% 78%, 96% 92%, 91% 80%, 86% 96%, 80% 84%, 74% 94%, 67% 82%, 61% 97%, 55% 85%, 48% 95%, 42% 81%, 36% 93%, 29% 84%, 23% 97%, 17% 83%, 11% 94%, 5% 82%, 0 92%);
   --bg: #131110;
   --paper: #131110;
   --ink: #ffffff;
@@ -1200,7 +1204,7 @@ main {
   gap: 24px;
   align-items: center;
   max-width: 980px;
-  margin: 0 auto 80px;
+  margin: 0 auto 128px;
 }
 
 .join-hero-copy {
@@ -1266,94 +1270,295 @@ main {
   background: rgba(255, 255, 255, 0.07);
 }
 
-.join-grid {
+/* ---------- Join Us: three sticky notes ----------
+   Notes of the site's dark paper with a translucent sticky band in each section's
+   color, set in a row at relaxed, slightly different tilts and heights. On hover a
+   note straightens and lifts (the lift and edge come from the shared card hover). */
+
+.join-board {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
-  padding-top: 12px;
-  margin-bottom: 42px;
-}
-
-.join-card {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
+  gap: 34px;
   align-items: start;
-  padding: 22px 20px 24px;
-  border: 1px solid rgba(150, 150, 150, 0.34);
-  border-radius: 22px;
+  max-width: 1100px;
+  margin: 0 auto 150px;
+  padding-top: 12px;
+}
+
+@media (max-width: 980px) {
+  .join-board {
+    grid-template-columns: 1fr;
+    row-gap: 44px;
+    max-width: 520px;
+    margin-bottom: 120px;
+  }
+
+  .join-note {
+    min-height: 0;
+  }
+
+  .join-note--collaborators,
+  .join-note--values {
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .join-note {
+    transition: none;
+  }
+}
+
+.join-note {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 400px;
+  padding: clamp(44px, 4.2vw, 54px) clamp(24px, 2.6vw, 34px) clamp(30px, 3.2vw, 40px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+  /* Fine grain, a wash of the note's color under the band, then the dark paper. */
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
-    rgba(0, 0, 0, 0.42);
-  min-height: 100%;
-  transition:
-    border-color 220ms ease,
-    background 220ms ease,
-    box-shadow 220ms ease,
-    transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    var(--tex-grain),
+    linear-gradient(180deg, var(--note-wash) 0, transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: 160px 160px, auto, auto, 512px 512px;
+  box-shadow: 0 22px 34px -24px rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+  text-align: center;
+  rotate: var(--tilt, 0deg);
+  transition: rotate 480ms var(--ease-out, ease);
 }
 
-.join-card-label {
-  display: grid;
-  gap: 6px;
+/* The sticky band along the top edge: grain and paper fibres over the color,
+   with a slightly torn lower edge. */
+.join-note::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 14px;
+  background: var(--tex-grain), var(--note-color);
+  background-size: 160px 160px, auto;
 }
 
-.join-card-kicker {
-  margin: 0;
-  color: var(--accent);
-  font-size: 0.84rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.join-note--students {
+  --note-color: rgba(226, 24, 51, 0.8);
+  --note-wash: rgba(226, 24, 51, 0.07);
+  --note-ink: #eb434a;
+  --tilt: -1.2deg;
 }
 
-.join-card:nth-child(1) {
-  box-shadow: inset 0 0 0 1px rgba(226, 24, 51, 0.1);
+.join-note--collaborators {
+  --note-color: rgba(255, 255, 255, 0.3);
+  --note-wash: rgba(255, 255, 255, 0.035);
+  --note-ink: #c9c9c9;
+  --tilt: 0.9deg;
+  margin-top: 18px;
 }
 
-.join-card:nth-child(2) {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
-    rgba(0, 0, 0, 0.42);
+.join-note--values {
+  --note-color: rgba(241, 188, 66, 0.8);
+  --note-wash: rgba(241, 188, 66, 0.065);
+  --note-ink: #f1bc42;
+  --tilt: -0.6deg;
+  margin-top: 6px;
 }
 
-.join-card:nth-child(3) {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
-    rgba(0, 0, 0, 0.42);
-}
-
-/* Card hover follows the pointer, not focus restored after closing a dialog.
-   Keyboard users retain the button's own focus-visible outline. */
 @media (hover: hover) and (pointer: fine) {
-  body:not(.phd-dialog-open) .join-card:hover {
-    border-color: #f1bc42;
-    box-shadow: 0 16px 28px rgba(0, 0, 0, 0.2);
-    transform: translateY(-4px) rotate(-0.18deg);
-  }
-
-  body:not(.phd-dialog-open) .join-card:hover .join-card-kicker,
-  body:not(.phd-dialog-open) .join-card:hover h2,
-  body:not(.phd-dialog-open) .join-card:hover p {
-    color: #f1bc42;
+  body:not(.phd-dialog-open) .join-note:hover {
+    rotate: 0deg;
   }
 }
 
-.join-card h2,
+.join-note-icon {
+  width: 66px;
+  height: 56px;
+  margin-bottom: 14px;
+  overflow: visible;
+}
+
+.join-note-icon path {
+  fill: none;
+  stroke: var(--note-ink);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.join-note h2 {
+  margin: 0 0 18px;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: clamp(2rem, 2.8vw, 2.55rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+}
+
+.join-note > p {
+  text-wrap: pretty;
+  max-width: 34ch;
+  margin: 0 0 28px;
+  font-size: clamp(1rem, 1.2vw, 1.1rem);
+  line-height: 1.6;
+}
+
+/* The action sits at the bottom of its note, so the two notes line up. */
+.join-note .join-phd-trigger,
+.join-note-link {
+  margin-top: auto;
+}
+
+.join-note .join-phd-trigger,
+.join-note-link {
+  display: inline-flex;
+  align-items: center;
+  justify-self: auto;
+  align-self: center;
+  min-height: 46px;
+  padding: 10px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.3;
+  cursor: pointer;
+  transition: background 220ms ease, color 220ms ease;
+}
+
+.join-note .join-phd-trigger:hover,
+.join-note .join-phd-trigger:focus-visible,
+.join-note-link:hover,
+.join-note-link:focus-visible {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #131110;
+}
+
+.join-note :focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 4px;
+}
+
+/* What we value, inside the shared note. */
+.join-values-head {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 18px;
+}
+
+.join-values-head .join-note-icon {
+  margin: 0 0 14px;
+}
+
+.join-values-head h2 {
+  margin: 0;
+}
+
+/* The three values as one line in the heading face. */
+.join-note .join-values-line {
+  max-width: none;
+  margin: 0 0 18px;
+  color: #ffffff;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: clamp(1.2rem, 1.5vw, 1.35rem);
+  line-height: 1.35;
+}
+
+.join-note--values > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Hover: the sheet lifts a little and its edge brightens (shared card hover in alive.css). */
+
+/* ---------- Get in touch ---------- */
+
+/* A closing sub-section, centered under the notes: a hand-drawn hand that waves
+   when the section comes into view (and on hover), a smaller heading than the
+   notes, and the sentence with the interest-form link. */
+.join-contact {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.join-wave {
+  display: block;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 10px;
+  overflow: visible;
+}
+
+.join-wave path {
+  fill: none;
+  stroke: #f1bc42;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.join-wave-hand {
+  transform-box: fill-box;
+  transform-origin: 40% 95%;
+}
+
+.join-wave-motion {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.join-contact.is-waving .join-wave-hand {
+  animation: join-wave 1.5s ease-in-out 1;
+}
+
+.join-contact.is-waving .join-wave-motion {
+  opacity: 0.8;
+}
+
+@keyframes join-wave {
+  0%, 100% { rotate: 0deg; }
+  15% { rotate: 16deg; }
+  30% { rotate: -8deg; }
+  45% { rotate: 14deg; }
+  60% { rotate: -5deg; }
+  75% { rotate: 8deg; }
+}
+
 .join-contact h2 {
   margin: 0 0 10px;
   color: #ffffff;
-  font-family: "Didact Gothic", "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 1.28rem;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: clamp(1.45rem, 2vw, 1.7rem);
   font-weight: 400;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 
-.join-card p,
+.join-contact-ask {
+  display: block;
+}
+
 .join-contact p {
   margin: 0;
   color: #ffffff;
   font-size: clamp(0.98rem, 1.15vw, 1.05rem);
   line-height: 1.6;
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .join-contact.is-waving .join-wave-hand {
+    animation: none;
+  }
 }
 
 .join-contact p a {
@@ -1709,7 +1914,7 @@ main {
 }
 
 .publication-carousel-dot.is-active {
-  background: #ffd200;
+  background: #f1bc42;
   transform: scale(1.25);
 }
 
@@ -2011,8 +2216,8 @@ main {
 }
 
 .publication-resource-link:not(.is-pending) {
-  border-color: rgba(255, 210, 0, 0.62);
-  color: #ffd200;
+  border-color: rgba(241, 188, 66, 0.62);
+  color: #f1bc42;
 }
 
 .publication-resource-link svg {
@@ -2027,8 +2232,8 @@ main {
 
 .publication-resource-link:hover,
 .publication-resource-link:focus-visible {
-  border-color: #ffd200;
-  background: #ffd200;
+  border-color: #f1bc42;
+  background: #f1bc42;
   color: #000000;
   outline: none;
   transform: translateY(-1px);
@@ -2612,7 +2817,7 @@ main {
 .join-phd-trigger:focus-visible {
   color: #000000;
   background: #f1bc42;
-  border-color: #f4c85f;
+  border-color: #f1bc42;
 }
 
 .join-phd-trigger[hidden] { display: none; }
@@ -2732,8 +2937,8 @@ body.phd-dialog-open { overflow: hidden; }
   color: #050505;
   transform: translateY(-2px);
   box-shadow: 0 10px 22px rgba(0, 0, 0, .16);
-  background: #f4c85f;
-  border-color: #f4c85f;
+  background: #f1bc42;
+  border-color: #f1bc42;
   text-decoration: none;
 }
 .join-phd-program:active { transform: translateY(0); box-shadow: none; }
@@ -2758,25 +2963,11 @@ body.phd-dialog-open { overflow: hidden; }
 .join-phd-dialog .join-apply-button:hover,
 .join-phd-dialog .join-apply-button:focus-visible {
   color: #000000;
-  background: #f4c85f;
-  border-color: #f4c85f;
+  background: #f1bc42;
+  border-color: #f1bc42;
 }
 
-.join-contact {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px;
-  align-items: start;
-  padding-top: 18px;
-}
 
-.join-contact-cta {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 20px;
-}
 
 .join-apply-button {
   min-height: 50px;
@@ -2795,7 +2986,7 @@ body.phd-dialog-open { overflow: hidden; }
 .join-apply-button:focus-visible {
   color: #000000;
   background: #f1bc42;
-  border-color: #f4c85f;
+  border-color: #f1bc42;
 }
 
 .people-main {
@@ -3396,31 +3587,6 @@ body.phd-dialog-open { overflow: hidden; }
     justify-self: center;
   }
 
-  .join-contact {
-    grid-template-columns: 1fr;
-    align-items: start;
-  }
-
-  .join-contact-cta {
-    justify-content: flex-start;
-  }
-
-  .join-contact-cta .button,
-  .join-contact-cta .join-apply-button {
-    width: auto;
-    min-width: 0;
-  }
-
-  .join-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .join-card:nth-child(1),
-  .join-card:nth-child(2),
-  .join-card:nth-child(3) {
-    transform: none;
-  }
-
   .news-item {
     grid-template-columns: 1fr;
   }
@@ -3724,15 +3890,11 @@ body.phd-dialog-open { overflow: hidden; }
 
   .join-hero {
     gap: 14px;
-    margin-bottom: 48px;
+    margin-bottom: 76px;
   }
 
   .join-hero-figure img {
     width: min(100%, 134px);
-  }
-
-  .join-card {
-    padding: 18px 16px 20px;
   }
 
   .button {
