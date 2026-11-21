@@ -271,13 +271,13 @@
     layer.setAttribute("aria-hidden", "true");
     /* A loose frame around the whole hero: the seal and the intro text together. */
     [
-      { l: 6, t: 14, s: 14, c: "#f1bc42", star: true },
-      { l: 44, t: 9, s: 8, c: "#8fb0e0" },
-      { l: 94, t: 12, s: 13, c: "#8fb0e0", star: true },
-      { l: 98, t: 52, s: 7, c: "#f1bc42" },
-      { l: 92, t: 94, s: 12, c: "#e5485e", star: true },
-      { l: 47, t: 93, s: 10, c: "#f1bc42", star: true },
-      { l: 2, t: 62, s: 8, c: "#e5485e" },
+      { l: 6, t: 14, s: 20, c: "#f1bc42", star: true },
+      { l: 44, t: 9, s: 11, c: "#8fb0e0" },
+      { l: 94, t: 12, s: 18, c: "#8fb0e0", star: true },
+      { l: 98, t: 52, s: 10, c: "#f1bc42" },
+      { l: 92, t: 94, s: 17, c: "#e5485e", star: true },
+      { l: 47, t: 93, s: 14, c: "#f1bc42", star: true },
+      { l: 2, t: 62, s: 11, c: "#e5485e" },
     ].forEach((item, index) => {
       const span = document.createElement("span");
       span.style.cssText = [
@@ -318,9 +318,9 @@
     sky.setAttribute("aria-hidden", "true");
     /* Three small accents placed around the page title, relative to the title itself. */
     [
-      { x: "-34px", y: "-6px", side: "left", s: 11, c: "#f1bc42", star: true },
-      { x: "-22px", y: "-14px", side: "right", s: 8, c: "#8fb0e0", star: true },
-      { x: "-20px", y: "42px", side: "left", s: 4, c: "#f4efe6" },
+      { x: "-38px", y: "-8px", side: "left", s: 15, c: "#f1bc42", star: true },
+      { x: "-26px", y: "-16px", side: "right", s: 11, c: "#8fb0e0", star: true },
+      { x: "-22px", y: "42px", side: "left", s: 6, c: "#f4efe6" },
     ].forEach((item, index) => {
       const span = document.createElement("span");
       span.style.cssText = `--x:${item.x};--y:${item.y};--s:${item.s}px;--c:${item.c};--tw:${(0.9 + index * 0.25).toFixed(2)}s;--delay:${(-index * 0.4).toFixed(1)}s`;
@@ -545,7 +545,6 @@
     [
       ".research-perspective",
       ".research-theme-card",
-      ".person-tile",
       ".publication-collection .publication-card",
       ".publication-feature",
       ".news-archive-main .news-item",
@@ -580,10 +579,10 @@
     });
   }
 
-  /* ---------- News thumbnails: washi tape in red, yellow and blue ----------
+  /* ---------- News thumbnails: washi tape in red, yellow and grey ----------
      A fixed order down the whole list (not random, and the same on every visit),
      so neighbouring photos never share a color, even across month groups. */
-  const tapeOrder = ["red", "blue", "yellow", "red", "yellow", "blue"];
+  const tapeOrder = ["red", "grey", "yellow", "red", "yellow", "grey"];
   document.querySelectorAll(".news-media:not(.news-media-logo)").forEach((media, index) => {
     media.dataset.tape = tapeOrder[index % tapeOrder.length];
   });

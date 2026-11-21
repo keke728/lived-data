@@ -1737,28 +1737,21 @@ html:not(#ds) .join-phd-dialog {
   --note-ink: #eb434a;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 3px;
+  /* A sheet of the same dark paper as the Join Us notes, with a faint red wash
+     fading down from the top, like the Students note it opens from. */
   background:
     var(--tex-grain),
-    linear-gradient(180deg, rgba(226, 24, 51, 0.1) 0, transparent 34%),
+    linear-gradient(180deg, rgba(226, 24, 51, 0.08) 0, transparent 50%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
     var(--paper) url("assets/paper-dark.jpg") repeat;
   background-size: 160px 160px, auto, auto, 512px 512px;
-  rotate: -0.6deg;
-}
-
-html:not(#ds) .join-phd-dialog::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 20px;
-  background: var(--tex-grain), var(--tex-fibers), var(--note-color);
-  background-size: 160px 160px, 240px 60px, auto;
-  clip-path: var(--tex-tear);
-  pointer-events: none;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9);
+  rotate: -0.4deg;
 }
 
 html:not(#ds) .join-phd-dialog .join-phd-content {
-  padding-top: clamp(40px, 5vw, 48px);
+  padding-top: clamp(30px, 4vw, 38px);
 }
 
 @media (max-width: 600px) {
@@ -1771,9 +1764,52 @@ html:not(#ds) :is(.join-phd-eyebrow, .join-phd-directions li)::before {
   background: var(--note-ink);
 }
 
+/* "Interested? Reach out, or apply by December 1." : when the popup opens the red
+   wavy line draws itself in under the words, then the wave keeps flowing slowly. */
 html:not(#ds) .join-phd-dialog .wave-underline {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='9' viewBox='0 0 64 9'%3E%3Cpath d='M0 4.6 C 7 1.6, 13 7.8, 23 4.4 S 39 1.6, 47 4.8 S 58 6.9, 64 4.6' fill='none' stroke='%23eb434a' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E");
+  position: relative;
+  display: inline-block;
+  padding-bottom: 9px;
+  background: none;
+  animation: none;
 }
+
+html:not(#ds) .join-phd-dialog .wave-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 9px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='9' viewBox='0 0 64 9'%3E%3Cpath d='M0 4.6 C 7 1.6, 13 7.8, 23 4.4 S 39 1.6, 47 4.8 S 58 6.9, 64 4.6' fill='none' stroke='%23eb434a' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x 0 0 / 64px 9px;
+  pointer-events: none;
+}
+
+html:not(#ds) .join-phd-dialog[open] .wave-underline::after {
+  animation:
+    phd-underline-draw 1100ms 350ms cubic-bezier(0.55, 0.05, 0.25, 1) forwards,
+    phd-underline-flow 3.2s 1450ms linear infinite;
+}
+
+@keyframes phd-underline-draw {
+  to { width: 100%; }
+}
+
+@keyframes phd-underline-flow {
+  from { width: 100%; background-position: 0 0; }
+  to { width: 100%; background-position: 64px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(#ds) .join-phd-dialog .wave-underline::after {
+    width: 100%;
+  }
+
+  html:not(#ds) .join-phd-dialog[open] .wave-underline::after {
+    animation: none;
+  }
+}
+
 
 html:not(#ds) .join-phd-dialog .join-phd-program:not(#ds-note):is(:hover, :focus-visible) {
   border-color: var(--note-ink);
@@ -1909,10 +1945,10 @@ html:not(#ds) .news-item:nth-of-type(3n + 3) .news-media {
   --photo-tilt: -0.8deg;
 }
 
-/* Tape colors: red, yellow and blue, set in a fixed order by alive.js. */
+/* Tape colors: red, yellow and grey, set in a fixed order by alive.js. */
 html:not(#ds) .news-media[data-tape="red"] { --tape: repeating-linear-gradient(-45deg, rgba(226, 24, 51, 0.8) 0 4px, rgba(244, 239, 230, 0.75) 4px 8px); }
 html:not(#ds) .news-media[data-tape="yellow"] { --tape: repeating-linear-gradient(-45deg, rgba(241, 188, 66, 0.8) 0 4px, rgba(244, 239, 230, 0.7) 4px 8px); }
-html:not(#ds) .news-media[data-tape="blue"] { --tape: repeating-linear-gradient(-45deg, rgba(143, 176, 224, 0.85) 0 4px, rgba(244, 239, 230, 0.75) 4px 8px); }
+html:not(#ds) .news-media[data-tape="grey"] { --tape: repeating-linear-gradient(-45deg, rgba(201, 201, 201, 0.85) 0 4px, rgba(244, 239, 230, 0.75) 4px 8px); }
 
 html:not(#ds) .news-media.news-media-bulb {
   background: #f4f1ea;
@@ -1933,6 +1969,23 @@ html:not(#ds) .news-media-bulb img {
   html:not(#ds) .news-item {
     grid-template-columns: 1fr;
   }
+}
+
+/* ---------- One paper for every card ----------
+   The research theme cards and the featured publication use the same dark paper
+   as the Join Us notes and the PhD popup. */
+html:not(#ds) .research-theme-card,
+html:not(#ds) .publication-card-featured {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    var(--paper) url("assets/paper-dark.jpg") repeat;
+  background-size: auto, 512px 512px;
+}
+
+/* The home page's Join Us button turns red on hover, like the heart. */
+html:not(#ds) .button[href="join-us.html"]:not(#ds-note):is(:hover, :focus-visible) {
+  border-color: #eb434a;
+  color: #eb434a;
 }
 
 /* ---------- Icon buttons: small outlined circles ---------- */
@@ -2045,6 +2098,11 @@ html:not(#ds) body .news-item.news-item:is(:hover, :has(:focus-visible)) {
   html:not(#ds) body:not(.phd-dialog-open) .join-note:is(:hover, :has(:focus-visible)) {
     border-color: var(--note-ink);
   }
+
+  /* Research theme cards take the color of their circle on the edge (red, gold, grey). */
+  html:not(#ds) body .research-theme-card:nth-child(1):is(:hover, :has(:focus-visible)) { border-color: #eb434a; }
+  html:not(#ds) body .research-theme-card:nth-child(2):is(:hover, :has(:focus-visible)) { border-color: #f1bc42; }
+  html:not(#ds) body .research-theme-card:nth-child(3):is(:hover, :has(:focus-visible)) { border-color: #c9c9c9; }
 }
 
 /* ---------- Focus: one gold ring everywhere ---------- */

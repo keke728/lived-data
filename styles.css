@@ -1334,14 +1334,26 @@ main {
 
 /* The sticky band along the top edge: grain and paper fibres over the color,
    with a slightly torn lower edge. */
+/* A strip of striped washi tape holds each note to the page, like the taped
+   photos in News & updates; it takes the note's color and sits at its own angle. */
 .join-note::before {
   content: "";
   position: absolute;
-  inset: 0 0 auto;
-  height: 14px;
-  background: var(--tex-grain), var(--note-color);
-  background-size: 160px 160px, auto;
+  top: -11px;
+  left: 50%;
+  z-index: 2;
+  width: 92px;
+  height: 22px;
+  translate: -50% 0;
+  rotate: var(--tape-angle, -4deg);
+  background: repeating-linear-gradient(-45deg, var(--note-color) 0 6px, rgba(244, 239, 230, 0.72) 6px 12px);
+  opacity: 0.9;
+  clip-path: polygon(0 10%, 4% 0, 96% 6%, 100% 0, 98% 100%, 94% 88%, 3% 100%, 0 90%);
+  pointer-events: none;
 }
+
+.join-note--collaborators { --tape-angle: 3deg; }
+.join-note--values { --tape-angle: -2deg; }
 
 .join-note--students {
   --note-color: rgba(226, 24, 51, 0.8);
