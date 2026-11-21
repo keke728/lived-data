@@ -13,7 +13,7 @@
   --ink: #ffffff;
   --muted: rgba(255, 255, 255, 0.76);
   --line: rgba(255, 255, 255, 0.1);
-  --accent: #e21833;
+  --accent: #eb434a; /* heart red; 4.9:1 on the dark paper, readable as small text */
   --shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
   --radius: 22px;
 }
@@ -1325,7 +1325,15 @@ main {
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
     var(--paper) url("assets/paper-dark.jpg") repeat;
   background-size: 160px 160px, auto, auto, 512px 512px;
-  box-shadow: 0 22px 34px -24px rgba(0, 0, 0, 0.9);
+  /* Resting on the page, not floating: a light top edge, a slightly darker lower
+     edge for the paper's thickness, a tight contact shadow right at the edges,
+     and a short, soft shadow close beneath. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.35),
+    0 1px 1px rgba(0, 0, 0, 0.7),
+    0 2px 4px rgba(0, 0, 0, 0.45),
+    0 8px 14px -6px rgba(0, 0, 0, 0.6);
   color: #ffffff;
   text-align: center;
   rotate: var(--tilt, 0deg);
@@ -3078,7 +3086,12 @@ body.phd-dialog-open { overflow: hidden; }
   background: #101010;
   isolation: isolate;
   overflow: visible;
-  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.28);
+  /* Resting on the page like the Join Us notes: a tight contact shadow at the edge
+     and a short, soft shadow close beneath. */
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.6),
+    0 3px 6px rgba(0, 0, 0, 0.45),
+    0 12px 18px -8px rgba(0, 0, 0, 0.6);
   transition:
     transform 360ms cubic-bezier(0.22, 1, 0.36, 1),
     border-color 360ms ease;

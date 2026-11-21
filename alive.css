@@ -1679,7 +1679,7 @@ a {
 
 :root {
   --gold: #f1bc42;              /* main actions, focus ring, pen strokes */
-  --red: #e21833;               /* text-link hover, kickers */
+  --red: #eb434a;               /* text-link hover, kickers */
   --ink-dark: #131110;          /* text on filled buttons */
   --line: rgba(150, 150, 150, 0.34);      /* card edges */
   --line-hover: rgba(255, 255, 255, 0.5); /* card edges on hover */
@@ -1997,6 +1997,25 @@ html:not(#ds) .publication-card-featured {
 html:not(#ds) .button[href="join-us.html"]:not(#ds-note):is(:hover, :focus-visible) {
   border-color: #eb434a;
   color: #eb434a;
+}
+
+/* "Watch our recap": a small film icon before the link text. */
+.news-recap-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.news-recap-link svg {
+  width: 17px;
+  height: 14px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
 }
 
 /* ---------- Icon buttons: small outlined circles ---------- */

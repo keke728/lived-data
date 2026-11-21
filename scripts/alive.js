@@ -592,7 +592,7 @@
   if (shell && !document.querySelector(".alive-footer")) {
     const footer = document.createElement("footer");
     footer.className = "alive-footer";
-    footer.innerHTML = `<p>Lived Data Collective · University of Maryland, College Park</p>`;
+    footer.innerHTML = `<p>Lived Data Collective · University of Maryland</p>`;
     shell.appendChild(footer);
     if ("IntersectionObserver" in window) {
       const footerObserver = new IntersectionObserver(([entry]) => {
