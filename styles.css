@@ -2442,6 +2442,13 @@ main {
   line-height: 1.5;
 }
 
+/* Second line of the research intro starts on its own row (desktop). */
+@media (min-width: 761px) {
+  .research-intro-line {
+    display: block;
+  }
+}
+
 .research-intro-nowrap {
   white-space: nowrap;
 }
