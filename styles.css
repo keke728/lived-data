@@ -1410,6 +1410,7 @@ main {
 
 .join-note h2 {
   margin: 0 0 18px;
+  color: var(--note-ink);
   font-family: "IM Fell English", Georgia, serif;
   font-size: clamp(2rem, 2.8vw, 2.55rem);
   font-weight: 400;
@@ -1458,6 +1459,25 @@ main {
   border-color: #ffffff;
   background: #ffffff;
   color: #131110;
+}
+
+/* The note buttons (PhD, Get in touch): a dashed white outline at rest; it turns into a solid red
+   outline in the note's color (never filled) only when the button itself is
+   hovered or focused.
+   html:not(#ds) and :not(#ds-note) match the specificity of the button rules
+   in alive.css. The 2px line is offset by 1px less padding so the size holds. */
+html:not(#ds) .join-note .join-phd-trigger:not(#ds-note),
+html:not(#ds) .join-note .join-note-link:not(#ds-note) {
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  padding: 0 25px;
+}
+
+html:not(#ds) .join-note .join-phd-trigger:not(#ds-note):is(:hover, :focus-visible),
+html:not(#ds) .join-note .join-note-link:not(#ds-note):is(:hover, :focus-visible) {
+  border-style: solid;
+  border-color: var(--note-ink);
+  background: transparent;
+  color: var(--note-ink);
 }
 
 .join-note :focus-visible {
