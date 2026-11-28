@@ -2160,3 +2160,100 @@ html:not(#ds) main h1:not(.hero-reveal) {
     translate: none;
   }
 }
+
+/* ---------- Landing keywords: a sparkle line under the title ----------
+   Four research areas in italic IM Fell, separated by the hero's four-point sparkles.
+   The text column is only as wide as the keyword line (or the title, if wider): the
+   paragraph adds no width of its own and is justified to that same measure, so the
+   keyword line, paragraph and title share one left edge and one right edge.
+   On narrow screens the keyword line wraps, and the sparkle that would start a wrapped
+   line is clipped away.
+   To revert: delete this block and the <ul class="hero-keywords"> in index.html. */
+.hero-copy-reference {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.hero-copy-reference h1 {
+  margin-bottom: 16px;
+}
+
+.hero-keywords {
+  --spark-gap: 30px;
+  list-style: none;
+  box-sizing: border-box;
+  width: calc(100% + var(--spark-gap));
+  margin: 0 0 24px calc(-1 * var(--spark-gap));
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: 4px;
+  clip-path: inset(-10px 0 -10px var(--spark-gap));
+  font-family: "IM Fell English", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.hero-keywords li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.hero-keywords li + li {
+  padding-left: 10px;
+}
+
+.hero-keywords li::before {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  background: var(--spark, var(--sun));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0C5.5 3.5 6.5 4.5 10 5C6.5 5.5 5.5 6.5 5 10C4.5 6.5 3.5 5.5 0 5C3.5 4.5 4.5 3.5 5 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0C5.5 3.5 6.5 4.5 10 5C6.5 5.5 5.5 6.5 5 10C4.5 6.5 3.5 5.5 0 5C3.5 4.5 4.5 3.5 5 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* The first keyword's sparkle sits in the clipped margin, out of view. */
+.hero-keywords li:first-child {
+  padding-left: 10px;
+}
+
+.hero-keywords li:nth-child(3) {
+  --spark: var(--sky);
+}
+
+/* Wide enough for one line: any spare width is shared evenly around the sparkles. */
+@media (min-width: 700px) {
+  .hero-keywords {
+    flex-wrap: nowrap;
+  }
+
+  .hero-keywords li + li {
+    flex: 1 1 auto;
+  }
+
+  .hero-keywords li + li::before {
+    margin-inline: auto;
+  }
+}
+
+/* Intro paragraph: takes the column's width without widening it, justified, with
+   hyphenation only for long words so word gaps stay even. */
+.hero-copy-reference .hero-text-wide {
+  contain: inline-size;
+  max-width: none;
+  width: 100%;
+  text-align: justify;
+  text-justify: inter-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  hyphenate-limit-chars: 9 4 4;
+  -webkit-hyphenate-limit-before: 4;
+  -webkit-hyphenate-limit-after: 4;
+  text-wrap: pretty;
+}
